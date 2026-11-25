@@ -13,3 +13,5 @@
 5. 最後に機内モードで起動し、データが残っているかを確認します。
 
 注意：ホーム画面のアイコン削除・Safariサイトデータ削除は行わないでください。保存データが失われる恐れがあります。更新前にJSONバックアップも推奨します。
+
+Ver.0.2.2: iOS PWA bottom bar clearance; network-first navigation so updated HTML loads online. Existing local data storage keys unchanged.

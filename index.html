@@ -46,9 +46,32 @@ body{touch-action:pan-y} .chart-scroller,.tablewrap,.topnav{touch-action:auto}
 .restore-box .btnrow{margin:12px 0}.restore-box textarea{display:block;width:100%;min-height:125px;font-family:ui-monospace,monospace;font-size:12px;line-height:1.5;margin:9px 0}
 .restore-box button{min-height:44px}.restore-file{font-size:16px;max-width:100%;width:100%;margin:10px 0;padding:8px;background:#fff;border:1px solid #c8d8d2;border-radius:8px}
 .restore-status{font-size:13px;line-height:1.6;color:#225d52}
+
+/* PWA 0.2.2: bottom navigation tap area and home indicator clearance.
+   Keep a physical minimum even when safe-area-inset-bottom is reported as 0. */
+@media (display-mode: standalone) {
+  .topnav {
+    box-sizing: border-box;
+    padding-top: 12px !important;
+    padding-bottom: max(48px, calc(env(safe-area-inset-bottom, 0px) + 18px)) !important;
+  }
+  .topnav button { min-height: 46px; }
+  main { padding-bottom: calc(180px + max(48px, env(safe-area-inset-bottom, 0px))) !important; }
+}
+
+html.ios-pwa-standalone .topnav { padding-bottom:max(48px, calc(env(safe-area-inset-bottom, 0px) + 18px)) !important; }
+html.ios-pwa-standalone main { padding-bottom:calc(180px + max(48px, env(safe-area-inset-bottom, 0px))) !important; }
 </style></head>
+<script>
+// Safari's home-screen runtime may report zero safe-area insets.
+// Apply the standalone spacing when launched via apple-mobile-web-app-capable too.
+(function(){
+  const standalone=window.navigator.standalone===true || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+  if(standalone) document.documentElement.classList.add('ios-pwa-standalone');
+})();
+</script>
 <body>
-<header><h1>ミライ残高 <small style="font-size:12px">PWA試用版 0.2.1</small></h1></header>
+<header><h1>ミライ残高 <small style="font-size:12px">PWA試用版 0.2.2</small></h1></header>
 <main><div class="pwa-notice" id="pwaInfo">このPWAは旧Web版を基にした試用版です。iPhone版のデータを使う場合は「設定・データ」からJSONを復元してください。データはこの端末内に保存されます。</div>
 <div class="calc-guidance" role="note"><strong>金額欄は電卓式で入力できます。</strong> 例：<code>50000+12000</code>、<code>(80000-10000)/2</code>、<code>3000*2</code>。入力中に計算結果を表示し、保存時は金額のみ記録します（1円未満は四捨五入）。</div>
 <nav class="topnav" aria-label="アプリの画面切り替え">
@@ -96,7 +119,7 @@ body{touch-action:pan-y} .chart-scroller,.tablewrap,.topnav{touch-action:auto}
 <label for="jsonPaste">バックアップのJSON全文</label><textarea id="jsonPaste" spellcheck="false" placeholder='{ "baseDate": "2026-11-25", ... }'></textarea>
 <button type="button" id="restorePaste" class="secondary">貼り付けたJSONを確認して復元</button>
 </details></div></div></section>
-<footer class="note">PWA試用版 0.2.1｜端末内保存・銀行連携なし。データは自動同期されません。定期的にJSONバックアップを保存してください。</footer>
+<footer class="note">PWA試用版 0.2.2｜端末内保存・銀行連携なし。データは自動同期されません。定期的にJSONバックアップを保存してください。</footer>
 </main>
 <script>
 "use strict";
