@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ミライ残高 | PWA試用版</title><meta name="theme-color" content="#124B42"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="ミライ残高"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png"><style>
+:root{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:#1b2935;background:#f3f6f8}*{box-sizing:border-box}body{margin:0}header{background:#133d3a;color:white;padding:20px max(20px,calc((100vw - 1080px)/2))}header h1{margin:0;font-size:24px}header small{color:#b9dbd2}main{max-width:1080px;margin:24px auto;padding:0 16px 50px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.card{background:white;border-radius:16px;padding:20px;box-shadow:0 2px 12px #18384a10;margin-bottom:16px}.card h2{font-size:17px;margin:0 0 14px}.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.row>*{min-width:0}label{font-size:13px;color:#52616c;display:block;margin:8px 0 4px}input,select{font:inherit;padding:10px;border:1px solid #ccd7dd;border-radius:9px;background:white;max-width:100%;width:100%}input[type=checkbox]{width:auto}button{font:inherit;border:0;background:#16695d;color:white;border-radius:9px;padding:10px 14px;cursor:pointer}button.secondary{background:#e5eeed;color:#22524b}button.danger{background:#fff0ef;color:#a33329}button:disabled{opacity:.5}.muted{color:#687781;font-size:12px}.hero{background:#133d3a;color:white}.hero .muted{color:#b6d7d0}.number{font-size:32px;font-weight:750;letter-spacing:-1px}.negative{color:#bd3434}.hero .negative{color:#ffc5c5}.smallnum{font-weight:700;font-size:20px}.stat{background:#f4f8f7;padding:12px;border-radius:12px}.form3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.form4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:13px;white-space:nowrap}th,td{text-align:left;padding:11px 8px;border-bottom:1px solid #e9eeee}th{color:#687781;background:#f7faf9}td.num{text-align:right;font-variant-numeric:tabular-nums}th.num{text-align:right}.pill{border-radius:100px;background:#fff3dc;color:#8b5900;font-size:11px;padding:3px 7px}.pill.ok{background:#e0f4e8;color:#246644}.warn{background:#fff5df;border-radius:10px;padding:12px;color:#805b16;font-size:13px}.bar{height:12px;background:#e6eeee;border-radius:10px;overflow:hidden}.bar>div{height:100%;background:#36a68b}.monthline{padding:10px 0;border-bottom:1px solid #eef1f2}.monthline button{padding:4px 9px;font-size:12px}.sectionhead{display:flex;justify-content:space-between;align-items:center;gap:10px}details{margin-top:12px}summary{cursor:pointer;color:#14675b;font-weight:600}.note{font-size:12px;color:#667681;line-height:1.7}.toggle{display:flex;gap:8px;align-items:center;font-size:13px}.topnav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}.topnav button{background:white;color:#275b53;border:1px solid #cbded9}.topnav button.active{background:#16695d;color:white}.hidden{display:none!important}@media(max-width:720px){.grid,.form3,.form4{grid-template-columns:1fr}.number{font-size:27px}.card{padding:15px}main{margin-top:16px}}
+
+.history-nav{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:12px 0}.history-nav button{font-size:13px}.actual{background:#e0f4e8;color:#246644}.monthline .actual-value{color:#16695d}.history-note{background:#edf7f4;padding:12px;border-radius:10px;color:#21574f;font-size:13px;line-height:1.6}.historical-value{color:#52616c}.period-label{font-weight:650}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #61aa9b;outline-offset:2px}
+.inlinehelp{color:#4e6b69;font-size:12px;line-height:1.65;margin:4px 0 10px}
+.kpi-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.kpi{background:#f4f8f7;border-radius:12px;padding:14px}.kpi .value{font-size:21px;font-weight:750;margin-top:4px}
+.callout{background:#edf7f4;color:#21574f;padding:11px 13px;border-radius:10px;font-size:13px;line-height:1.65}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.compact{max-width:130px}.bad{color:#bd3434}.tablewrap td button{font-size:12px;padding:6px 8px}
+.tablewrap tr:nth-child(even){background:#fcfdfd}.section-note{margin:0 0 12px;font-size:13px;color:#566f78;line-height:1.65}
+.topnav{overflow-x:auto;flex-wrap:nowrap}.topnav button{white-space:nowrap}
+@media(max-width:720px){.kpi-grid{grid-template-columns:1fr 1fr}.kpi .value{font-size:18px}}
+@media(max-width:420px){.kpi-grid{grid-template-columns:1fr}}
+
+.calc-guidance{padding:12px 15px;border:1px solid #cbe5dc;border-radius:12px;background:#eaf7f1;margin-bottom:14px;font-size:13px;line-height:1.7;color:#184e43}.calc-guidance code{background:#d4eee5;border-radius:4px;padding:2px 4px}.calc-preview{font-size:12px;color:#14675b;min-height:1.4em;margin-top:4px}.calc-preview.invalid{color:#b63e34}input.money-invalid{border-color:#b63e34;background:#fff8f7}
+.chart-scroller{overflow-x:auto;overflow-y:hidden;cursor:grab;touch-action:pan-x pan-y;overscroll-behavior-x:contain;scrollbar-color:#a4c8c1 #eef4f3;border:1px solid #edf1f2;border-radius:12px;background:#fff;user-select:none;-webkit-user-select:none}
+.chart-scroller.dragging{cursor:grabbing}.chart-scroller svg{display:block;max-width:none}.chart-selected{display:flex;justify-content:space-between;align-items:center;background:#eff7f5;padding:12px 15px;border-radius:12px;margin-bottom:12px}.chart-legend{display:flex;align-items:center;gap:15px;flex-wrap:wrap;font-size:12px;color:#52616c;margin-top:12px}.chart-legend>span{display:flex;align-items:center;gap:5px}.legend-line{width:24px;border-top:3px solid #16816a;display:inline-block}.forecast-line{border-color:#2d8c91;border-top-style:dashed}.chart-actions{display:flex;gap:8px;justify-content:space-between;margin-top:12px}.monthly-summary{margin-top:18px}
+
+/* PWA mobile ergonomics */
+html{-webkit-text-size-adjust:100%}body{background:#f3f6f8}header{padding:15px 18px}header h1{font-size:19px}
+main{padding-bottom:calc(100px + env(safe-area-inset-bottom))}
+.topnav{position:fixed;bottom:0;left:0;right:0;z-index:25;margin:0;background:#fff;padding:9px 10px calc(9px + env(safe-area-inset-bottom));border-top:1px solid #dce8e4;box-shadow:0 -3px 18px #142c2610;gap:6px;overflow-x:auto;scrollbar-width:none}
+.topnav::-webkit-scrollbar{display:none}.topnav button{font-size:12px;padding:9px 11px;flex:0 0 auto;border-radius:11px}
+.pwa-notice{font-size:12px;line-height:1.65;padding:11px 13px;border-radius:11px;color:#3d665d;background:#e6f3ef;margin-bottom:12px}
+.number,.smallnum,.kpi .value,input[data-money]{font-variant-numeric:tabular-nums}
+@media(max-width:720px){main{margin-top:12px}header{border-bottom-left-radius:14px;border-bottom-right-radius:14px}.card{margin-bottom:12px}.chart-scroller{min-height:200px}.sectionhead{flex-wrap:wrap}}
+</style></head>
+<body>
+<header><h1>ミライ残高 <small style="font-size:12px">PWA試用版</small></h1></header>
+<main><div class="pwa-notice" id="pwaInfo">このPWAは旧Web版を基にした試用版です。iPhone版のデータを使う場合は「設定・データ」からJSONを復元してください。データはこの端末内に保存されます。</div>
+<div class="calc-guidance" role="note"><strong>金額欄は電卓式で入力できます。</strong> 例：<code>50000+12000</code>、<code>(80000-10000)/2</code>、<code>3000*2</code>。入力中に計算結果を表示し、保存時は金額のみ記録します（1円未満は四捨五入）。</div>
+<nav class="topnav" aria-label="アプリの画面切り替え">
+<button class="active" data-view="dashboard">残高予測</button><button data-view="salaries">給与入力</button><button data-view="savings">貯金履歴</button><button data-view="cards">カード請求額</button><button data-view="events">臨時入出金</button><button data-view="shared">共通口座</button><button data-view="settings">設定・データ</button>
+</nav>
+<section id="dashboard">
+<div class="history-note" id="baselineInfo" style="margin-bottom:16px" role="status"></div>
+<div class="grid"><div class="card hero"><div class="muted">来月末の予測残高</div><div id="future" class="number">—</div><div id="futureDate" class="muted"></div></div><div class="card"><div class="muted">予測期間中の最低残高</div><div id="minimum" class="number">—</div><div id="minimumDate" class="muted"></div></div></div>
+<div class="card"><div class="sectionhead"><h2>給与の予測設定</h2><button class="secondary" data-goto="salaries">給与を入力</button></div><div class="kpi-grid"><div class="kpi"><div class="muted">過去の手取り平均</div><div id="avgSalary" class="value">—</div></div><div class="kpi"><div class="muted">平均に使った実績</div><div id="avgCount" class="value">—</div></div><div class="kpi"><div class="muted">平均対象期間</div><div id="avgSpan" class="value">—</div></div></div><p id="avgNote" class="inlinehelp"></p></div>
+<div id="alerts" class="warn" style="margin-bottom:16px" role="status"></div>
+<div class="card"><div class="sectionhead"><h2>月末残高・貯金の推移</h2><button class="secondary" data-goto="savings">貯金残高を登録</button></div>
+<p class="section-note">過去は確定実績と参考推計を区別し、記録がない期間は表示しません。今月・来月は予測。グラフを左右にスワイプ、またはマウスでつかんで動かせます。点を押すとその月の残高を確認できます。</p>
+<div class="chart-selected"><div><div class="muted" id="chartSelectedMonth">月を選択</div><div class="smallnum" id="chartSelectedBalance">—</div></div><span class="pill" id="chartSelectedType">—</span></div>
+<div class="chart-scroller" id="chartScroll" role="region" tabindex="0" aria-label="月末貯金残高の折れ線グラフ。左右にスクロールできます"><div id="chartCanvas"></div></div>
+<div class="chart-legend"><span><i class="legend-line actual-line"></i>確定した月末実績</span><span><i class="legend-line" style="border-color:#d49a36"></i>過去の参考推計</span><span><i class="legend-line forecast-line"></i>未来の予測（破線）</span><span class="muted">← 過去　未来 →</span></div>
+<div class="chart-actions"><button id="chartOlder" class="secondary">← 過去へ</button><button id="chartLatest" class="secondary">今月・来月へ戻る</button></div>
+<div id="months" class="monthly-summary"></div></div>
+<div class="card"><div class="sectionhead"><h2>Olive・共通口座の残高予測</h2><button class="secondary" data-goto="shared">共通口座の設定</button></div><div class="grid"><div class="stat"><div class="muted">今月末の共通口座残高</div><div class="smallnum" id="sharedCurrent">未設定</div></div><div class="stat"><div class="muted">来月末の共通口座残高</div><div class="smallnum" id="sharedNext">未設定</div></div></div><p class="inlinehelp" id="sharedHint"></p></div>
+<div class="card"><div class="sectionhead"><h2 id="timelineTitle">日付別の残高</h2><select id="monthSelect" aria-label="明細を表示する月" style="width:170px"></select></div><div class="tablewrap"><table><thead><tr><th>日付</th><th>内容</th><th>状態</th><th class="num">増減</th><th class="num">残高</th></tr></thead><tbody id="timeline"></tbody></table></div></div>
+</section>
+<section id="shared" class="hidden">
+<div class="card"><h2>共通口座の設定</h2><p class="section-note">Oliveには「本人負担額を入力」と「カード請求総額から計算」の2方式があります。本人負担額を入力した場合、メイン口座からはその金額だけを差し引きます。共通口座全体の残高は請求総額が不明なため算出できません。妻の入金は自分の収入には含めません。</p>
+<div class="form3"><div><label for="sharedBalance">開始日時点の共通口座残高（円・任意）</label><input type="text" id="sharedBalance" placeholder="未設定のままでも可" inputmode="decimal" autocomplete="off" data-money="sharedBalance"></div><div><label for="transferLead">振替を想定する日</label><select id="transferLead"><option value="0">Olive引落当日</option><option value="1">引落前日（仮）</option><option value="3">引落3日前（仮）</option><option value="7">引落7日前（仮）</option></select></div><div style="align-self:end"><button id="saveSharedSettings">共通口座の設定を保存</button></div></div><p class="inlinehelp">共通口座残高は、Oliveの請求総額と妻の入金額が分かる月のみ計算できます。本人負担額だけ入力した場合、メイン口座の残高計算には反映しますが、共通口座全体の残高は未算出にします。実際の振替日が異なればその日の資金繰りも変わります。</p></div>
+<div class="card"><h2>月別のOlive精算</h2><p class="section-note">従来どおり折半後の本人負担額だけ入力しても使えます。妻の負担まで算出したい月に限り、入力方式を「カード請求総額」に変更し、ahamo分などの内訳を登録してください。</p><div class="tablewrap"><table><thead><tr><th>引落月</th><th class="num">Olive登録額</th><th class="num">本人負担</th><th class="num">妻負担</th><th>内訳</th></tr></thead><tbody id="sharedRows"></tbody></table></div></div>
+<div class="card"><div class="sectionhead"><h2>共通口座の入出金</h2><select id="sharedMonth" aria-label="共通口座の明細月" style="width:165px"></select></div><div class="tablewrap"><table><thead><tr><th>日付</th><th>内容</th><th class="num">増減</th><th class="num">残高</th></tr></thead><tbody id="sharedTimeline"></tbody></table></div><p class="inlinehelp">※請求総額が登録されていない月の共通口座残高は未算出です。妻の入金は総額入力モードの場合のみ計算します。</p></div></section>
+<section id="savings" class="hidden"><div class="card"><h2>月末の貯金残高を記録</h2><p class="section-note">過去の月末残高を実績として登録できます。実績値は過去の逆算の基準になり、後続の予測にも反映します。未来の「見込み」はメモとして保存しますが、入出金からの予測残高を上書きしません。共通口座を含めないメイン口座の金額を入力してください。</p><div class="form3"><div><label for="savingMonth">対象月</label><input type="month" id="savingMonth"></div><div><label for="savingAmount">月末の貯金残高（円）</label><input type="text" id="savingAmount" placeholder="例: 102288" inputmode="decimal" autocomplete="off" data-money="savingAmount"></div><div><label for="savingStatus">区分</label><select id="savingStatus"><option value="actual">実績（確定）</option><option value="estimate">見込み（手入力）</option></select></div></div><div class="btnrow" style="margin-top:14px"><button id="saveSaving">この月の貯金残高を保存</button><span class="muted">同じ月は上書き保存します</span></div><div class="history-note" style="margin-top:14px">確定した月末実績は「基準点」として使用します。過去の未記録期間は実績ではなく「参考推計」と表示し、記録が全くない区間を実際の貯金実績として見せません。未来の見込みは参考メモで、予測計算を上書きしません。</div></div><div class="card"><h2>登録した貯金残高の履歴</h2><div class="tablewrap"><table><thead><tr><th>対象月</th><th>区分</th><th class="num">月末貯金額</th><th>操作</th></tr></thead><tbody id="savingRows"></tbody></table></div></div></section>
+<section id="salaries" class="hidden">
+<div class="card"><h2>毎月の手取り給与を登録</h2><p class="section-note">給与が分かった月だけ入力します。未来の未入力月は、<b>過去に支給済みの確定給与の平均</b>で自動予測。ボーナスは「臨時入出金」に登録してください。</p>
+<div class="form3"><div><label for="salaryMonth">給与の支給月</label><input type="month" id="salaryMonth"></div><div><label for="salaryAmount">手取り金額（円）</label><input type="text" id="salaryAmount" placeholder="例: 254000" inputmode="decimal" autocomplete="off" data-money="salaryAmount"></div><div><label for="salaryStatus">金額の状態</label><select id="salaryStatus"><option value="confirmed">確定（実績）</option><option value="estimated">未確定（手入力の見込み）</option></select></div></div>
+<div class="btnrow" style="margin-top:14px"><button id="saveSalary">この月の給与を保存</button><span class="muted">同じ月を再保存すると上書きします</span></div>
+</div>
+<div class="card"><h2>未来の給与の予測方法</h2><label for="averageWindow">平均に使う過去の確定給与</label><select id="averageWindow" class="compact"><option value="3">直近3件</option><option value="6">直近6件</option><option value="all">全件</option></select><p class="inlinehelp">平均の対象は計算開始日までに給料日が過ぎている「確定」登録だけです。登録が1〜2件ならその件数で平均し、0件なら予測給与を計算に入れず「未入力」と警告します。</p><div id="salaryAvgDetail" class="callout"></div></div>
+<div class="card"><h2>月ごとの給与一覧</h2><p class="section-note">「平均予測」は明細に反映されますが、実額を保存すると自動で置き換わります。給料日が開始日以前の月は、既に開始残高に反映済みとして二重計上しません。</p><div class="tablewrap"><table><thead><tr><th>支給月</th><th>金額の区分</th><th class="num">手取り給与</th><th></th></tr></thead><tbody id="salaryRows"></tbody></table></div></div>
+</section>
+<section id="cards" class="hidden"><div class="card"><h2>カード請求額の登録</h2><p class="note">現時点の請求予定額を入力し、確定後に上書きできます。Oliveは折半後の本人負担額をそのまま入力する方式が標準です。未入力と0円は区別します。</p><div class="form4"><div><label>対象月（引落月）</label><input type="month" id="cardMonth"></div><div><label>カード</label><select id="cardName"></select></div><div><label for="cardAmount" id="cardAmountLabel">請求予定額（円）</label><input type="text" id="cardAmount" placeholder="例: 70000" inputmode="decimal" autocomplete="off" data-money="cardAmount"></div><div><label>状態</label><select id="cardStatus"><option value="estimated">未確定</option><option value="confirmed">確定</option></select></div></div><div id="oliveBreakdown" class="callout" style="margin-top:12px"><strong>Oliveの金額の入力方式</strong><label for="oliveAmountMode">この欄に入力した金額は？</label><select id="oliveAmountMode"><option value="personal">すでに折半した本人負担額（推奨・従来どおり）</option><option value="total">共通カードの請求総額（内訳から負担額を計算）</option></select><p class="inlinehelp" id="oliveModeHelp"></p><div id="oliveBreakdownInputs"><div class="form3"><div><label for="oliveAhamo">ahamo：本人が全額負担（円）</label><input id="oliveAhamo" type="text" placeholder="未入力＝未配分" inputmode="decimal" autocomplete="off" data-money="oliveAhamo"></div><div><label for="oliveWife">妻が全額負担する額（円）</label><input id="oliveWife" type="text" value="0" inputmode="decimal" autocomplete="off" data-money="oliveWife"></div><div><label>折半対象額</label><div class="smallnum" id="oliveSharedAmount">—</div></div></div><p class="inlinehelp">ドコモ光などは折半対象に含めます。ahamo以外に個人負担があればそれぞれの欄へ入力してください。残額を半分ずつ負担します。</p></div></div>
+<div class="btnrow" style="margin-top:12px"><button id="saveCard">この月の請求額を保存</button><span class="muted">同じ月・カードを再保存すると上書き</span></div></div><div class="card"><h2>登録済みのカード請求</h2><div class="tablewrap"><table><thead><tr><th>引落月</th><th>カード</th><th>引落日</th><th>状態</th><th class="num">請求額</th><th>個人負担</th><th></th></tr></thead><tbody id="cardRows"></tbody></table></div></div></section>
+<section id="events" class="hidden"><div class="card"><h2>臨時の入出金を追加</h2><p class="note">ボーナス、指輪代金、旅行費などはこちら。給与の平均にボーナスは含まれません。</p><div class="form4"><div><label>日付</label><input type="date" id="eventDate"></div><div><label>内容</label><input id="eventTitle" placeholder="例: ボーナス、旅行、指輪"></div><div><label>金額（円）</label><input type="text" id="eventAmount" inputmode="decimal" autocomplete="off" data-money="eventAmount"></div><div><label>種類</label><select id="eventKind"><option value="expense">支出</option><option value="income">収入</option></select></div></div><button id="addEvent" style="margin-top:12px">予定を追加</button></div><div class="card"><h2>登録済みの臨時入出金</h2><div class="tablewrap"><table><thead><tr><th>日付</th><th>内容</th><th>種類</th><th class="num">金額</th><th></th></tr></thead><tbody id="eventRows"></tbody></table></div></div></section>
+<section id="settings" class="hidden"><div class="card"><h2>残高・給料日の設定</h2><div class="form3"><div><label>残高の基準日</label><input type="date" id="baseDate"></div><div><label>基準日時点の残高（円）</label><input type="text" id="balance" inputmode="decimal" autocomplete="off" data-money="balance"></div><div><label>給料日（1〜31）</label><input type="number" min="1" max="31" id="salaryDay"></div></div><p class="note">基準日の残高は、その日までの給与・引き落としを反映した金額を設定してください。過去の履歴は参考推計です。</p><p class="note">開始残高には計算開始日までの入出金が反映済みとします。同日の入出金は二重計上防止のため除外します。31日など存在しない日は月末に調整します。給与は「給与入力」から月ごとに登録します。</p><div class="row" style="margin:10px 0"><div><label for="baseStatus">基準残高の状態</label><select id="baseStatus"><option value="estimate">見込み（まだ月末になっていない・未照合）</option><option value="actual">実績（銀行残高と照合済み）</option></select></div><button type="button" id="useNovAnchor" class="secondary">基準日を本日に設定</button></div><p class="inlinehelp">基準日を変更する際は、既に反映済みの給与・カード・臨時収支を再加算しないようご注意ください。「11月末を基準に設定」では登録済みの給与・カード情報を消しません。</p><button id="saveSettings">設定を保存</button></div><div class="card"><h2>カードの引き落とし日</h2><p class="note">各カードの引落日を設定します。未入力月は計算上0円となり、予測が不完全であることを警告します。</p><div id="cardDays"></div><button id="saveDays" style="margin-top:12px">引落日を保存</button></div><div class="card"><h2>データのバックアップ</h2><p class="note">データはこのブラウザに保存されますが、ファイルを移動したりブラウザのデータを消したりすると引き継げない場合があります。旧版から移す場合は旧版の「JSONでバックアップ」から書き出して、こちらで読み込んでください。新規データは0円から始まります。iPhone版のJSONバックアップを読み込むか、正しい残高を設定してください。旧版のJSONを復元すると、その旧版に記録されていた基準日・残高が優先されます。違っていたら設定画面で変更してください。外部同期はありません。</p><div class="row"><button id="export">JSONでバックアップ</button><label style="margin:0"><span class="muted">バックアップを復元：</span><input type="file" id="import" accept=".json,application/json" style="max-width:250px"></label><button class="danger" id="reset">全データを初期化</button></div></div></section>
+<footer class="note">PWA試用版 0.1｜端末内保存・銀行連携なし。データは自動同期されません。定期的にJSONバックアップを保存してください。</footer>
+</main>
+<script>
+"use strict";
+const KEY='mirai-balance-pwa-v01',V62_KEY='mirai-balance-v062',V61_KEY='mirai-balance-v061',V6_KEY='mirai-balance-v06',V5_KEY='mirai-balance-v05',V4_KEY='mirai-balance-v04',V3_KEY='mirai-balance-v03',OLD_KEY='mirai-balance-v01',V2_KEY='mirai-balance-v02';
+const today=new Date();
+const pad=n=>String(n).padStart(2,'0');
+const dateString=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const currentMonth=dateString(today).slice(0,7);
+const yen=n=>Math.round(n).toLocaleString('ja-JP')+'円';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// 四則演算の安全なパーサー。eval/Functionは使わず数値・演算子・括弧だけを受理する。
+function parseAmount(value){
+ if(value===null||value===undefined)return null;
+ const raw=String(value).normalize('NFKC').replace(/[×]/g,'*').replace(/[÷]/g,'/').replace(/[−ー]/g,'-').replace(/[,，\s円￥¥]/g,'');
+ if(!raw||raw.length>160||/[^0-9.+\-*/()]/.test(raw))return null;
+ let i=0;
+ function ws(){} // 空白は正規化済み
+ function number(){const m=/^(?:\d+(?:\.\d*)?|\.\d+)/.exec(raw.slice(i));if(!m)throw Error('number');i+=m[0].length;return Number(m[0])}
+ function factor(){const c=raw[i];if(c==='+'||c==='-'){i++;const v=factor();return c==='-'?-v:v}if(c==='('){i++;const v=expr();if(raw[i]!==')')throw Error('paren');i++;return v}return number()}
+ function term(){let v=factor();while(raw[i]==='*'||raw[i]==='/'){const c=raw[i++],b=factor();if(c==='/'&&b===0)throw Error('zero');v=c==='*'?v*b:v/b;if(!Number.isFinite(v)||Math.abs(v)>1e15)throw Error('range')}return v}
+ function expr(){let v=term();while(raw[i]==='+'||raw[i]==='-'){const c=raw[i++],b=term();v=c==='+'?v+b:v-b;if(!Number.isFinite(v)||Math.abs(v)>1e15)throw Error('range')}return v}
+ try{let n=expr();if(i!==raw.length||!Number.isFinite(n)||Math.abs(n)>1e12)return null;return Math.round(n)}catch{return null}
+}
+const inputMoney=id=>parseAmount($(id).value);
+const moneyValue=id=>{const v=inputMoney(id);return v===null?NaN:v};
+function initMoneyInputs(){
+ document.querySelectorAll('input[data-money]').forEach(input=>{
+  const preview=document.createElement('div');preview.className='calc-preview';preview.setAttribute('aria-live','polite');
+  input.insertAdjacentElement('afterend',preview);
+  const update=()=>{
+   const raw=input.value.trim(),n=parseAmount(raw),invalid=raw!==''&&(n===null||(!['savingAmount','balance','sharedBalance'].includes(input.id)&&n<0));
+   input.classList.toggle('money-invalid',invalid);
+   preview.classList.toggle('invalid',invalid);
+   preview.textContent=raw===''?'':invalid?'式を確認してください（0で割ることもできません）':`＝ ${yen(n)}${/[+*/()×÷]/.test(raw)||/-/.test(raw.slice(1))?' （計算結果）':''}`;
+  };
+  input.addEventListener('input',update);input.addEventListener('change',update);
+  input.addEventListener('focus',update);
+  // 最初の表示と編集時のプレビューは値が入ったとき更新
+ });
+}
+const isMonth=s=>typeof s==='string'&&/^\d{4}-(0[1-9]|1[0-2])$/.test(s);
+const isDate=s=>typeof s==='string'&&/^\d{4}-(0[1-9]|1[0-2])-([0-2]\d|3[01])$/.test(s)&&!Number.isNaN(Date.parse(s+'T00:00:00'))&&dateString(new Date(s+'T00:00:00'))===s;
+const validAmount=v=>v!==''&&v!==null&&v!==undefined&&Number.isFinite(Number(v))&&Number(v)>=0&&Number.isInteger(Number(v))&&Number(v)<=1e12;
+const validDay=v=>Number.isInteger(Number(v))&&Number(v)>=1&&Number(v)<=31;
+const defaults=()=>({baseDate:dateString(new Date()),balance:0,baseStatus:'estimate',salaryDay:25,horizon:12,averageWindow:'3',salaryEntries:{},savings:{},sharedBalance:null,transferLead:1,cards:[{id:'olive',name:'Olive',day:27},{id:'amex',name:'Amex',day:27},{id:'eneos',name:'ENEOS',day:27},{id:'paypay',name:'PayPay',day:27},{id:'smbc',name:'三井住友',day:27}],bills:{},events:[]});
+function monthPlus(month,i){let [y,m]=month.split('-').map(Number);const idx=y*12+(m-1)+i;return `${Math.floor(idx/12)}-${pad(idx%12+1)}`}
+function monthDistance(a,b){const [y,m]=a.split('-').map(Number),[yy,mm]=b.split('-').map(Number);return (yy-y)*12+mm-m}
+function dayInMonth(month,day){let [y,m]=month.split('-').map(Number);return `${month}-${pad(Math.min(Number(day),new Date(y,m,0).getDate()))}`}
+function monthEnd(month){let [y,m]=month.split('-').map(Number);return `${month}-${pad(new Date(y,m,0).getDate())}`}
+function migrate(x){let s=defaults();if(x&&typeof x==='object'){s.baseStatus=(x.baseStatus==='estimate'||x.baseStatus==='actual')?x.baseStatus:'actual';for(let prop of ['baseDate','balance','baseStatus','salaryDay','horizon','cards','bills','events','averageWindow','salaryEntries','savings','sharedBalance','transferLead'])if(Object.prototype.hasOwnProperty.call(x,prop))s[prop]=x[prop];for(const [key,b] of Object.entries(s.bills||{})){if(key.endsWith('|olive')&&b&&typeof b==='object'&&!b.mode)b.mode=(b.ahamo!==null&&b.ahamo!==undefined)?'total':'personal'}if(!x.salaryEntries&&validAmount(x.salary)&&Number(x.salary)>0){let month=isDate(x.baseDate)?x.baseDate.slice(0,7):currentMonth;s.salaryEntries={[month]:{amount:Number(x.salary),status:'estimated',migrated:true}}}}return s}
+function validState(x){return !!(x&&isDate(x.baseDate)&&Number.isFinite(Number(x.balance))&&Math.abs(Number(x.balance))<=1e12&&['estimate','actual'].includes(x.baseStatus)&&validDay(x.salaryDay)&&[3,6,12].includes(Number(x.horizon))&&['3','6','all'].includes(String(x.averageWindow))&&x.savings&&typeof x.savings==='object'&&!Array.isArray(x.savings)&&Object.entries(x.savings).every(([m,e])=>isMonth(m)&&e&&Number.isFinite(Number(e.amount))&&Number.isInteger(Number(e.amount))&&Math.abs(Number(e.amount))<=1e12&&['actual','estimate'].includes(e.status))&&x.salaryEntries&&typeof x.salaryEntries==='object'&&!Array.isArray(x.salaryEntries)&&Object.entries(x.salaryEntries).every(([m,e])=>isMonth(m)&&e&&validAmount(e.amount)&&['confirmed','estimated'].includes(e.status))&&(x.sharedBalance===null||(Number.isInteger(Number(x.sharedBalance))&&Math.abs(Number(x.sharedBalance))<=1e12))&&[0,1,3,7].includes(Number(x.transferLead))&&Array.isArray(x.cards)&&x.cards.every(c=>c&&typeof c.id==='string'&&typeof c.name==='string'&&validDay(c.day))&&x.bills&&typeof x.bills==='object'&&!Array.isArray(x.bills)&&Object.values(x.bills).every(b=>b&&validAmount(b.amount)&&['estimated','confirmed'].includes(b.status)&&(b.ahamo===undefined||b.ahamo===null||validAmount(b.ahamo))&&(b.wifeOnly===undefined||validAmount(b.wifeOnly))&&(!b.mode||['personal','total'].includes(b.mode)))&&Array.isArray(x.events)&&x.events.every(e=>e&&typeof e.id==='string'&&isDate(e.date)&&typeof e.title==='string'&&validAmount(e.amount)&&['income','expense'].includes(e.type)))}
+function load(){try{const v2=localStorage.getItem(KEY);if(v2){let x=migrate(JSON.parse(v2));if(validState(x))return x;}const v62old=localStorage.getItem(V62_KEY);if(v62old){let x=migrate(JSON.parse(v62old));if(validState(x))return x;}const v61old=localStorage.getItem(V61_KEY);if(v61old){let x=migrate(JSON.parse(v61old));if(validState(x))return x;}const v6old=localStorage.getItem(V6_KEY);if(v6old){let x=migrate(JSON.parse(v6old));if(validState(x))return x;}const v5old=localStorage.getItem(V5_KEY);if(v5old){let x=migrate(JSON.parse(v5old));if(validState(x))return x;}const v4old=localStorage.getItem(V4_KEY);if(v4old){let x=migrate(JSON.parse(v4old));if(validState(x))return x;}const v3old=localStorage.getItem(V3_KEY);if(v3old){let x=migrate(JSON.parse(v3old));if(validState(x))return x;}const v2old=localStorage.getItem(V2_KEY);if(v2old){let x=migrate(JSON.parse(v2old));if(validState(x))return x;}const v1=localStorage.getItem(OLD_KEY);if(v1){let x=migrate(JSON.parse(v1));if(validState(x))return x;}}catch(e){console.warn('保存データを読み込めませんでした',e)}return defaults()}
+let state=load();
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(state));return true}catch{alert('保存できませんでした。ブラウザの保存設定をご確認ください。');return false}}
+function historicalEntries(){return Object.entries(state.salaryEntries).filter(([month,e])=>e.status==='confirmed'&&dayInMonth(month,state.salaryDay)<=state.baseDate).sort((a,b)=>a[0].localeCompare(b[0]))}
+function salaryAverage(){let records=historicalEntries();let limit=state.averageWindow==='all'?records.length:Number(state.averageWindow);let selected=records.slice(-limit);return {amount:selected.length?Math.round(selected.reduce((sum,[,s])=>sum+Number(s.amount),0)/selected.length):null,used:selected.length,total:records.length,months:selected.map(([m])=>m)}}
+function getSalary(month,avg){let manual=state.salaryEntries[month];if(manual)return {amount:Number(manual.amount),status:manual.status==='confirmed'?'salary-confirmed':'salary-estimated'};
+if(avg.amount!==null)return {amount:avg.amount,status:'salary-average'};
+return {amount:0,status:'salary-missing'}}
+function localDateShift(s,delta){const d=new Date(s+'T12:00:00');d.setDate(d.getDate()+delta);return dateString(d)}
+function oliveMode(b){return b.mode==='total'?'total':b.mode==='personal'?'personal':b.ahamo!==undefined&&b.ahamo!==null?'total':'personal'}
+function sharedSplit(b){
+ const total=Number(b.amount),mode=oliveMode(b);
+ if(mode==='personal')return {mode,mine:total,wife:null,ahamo:null,wifeOnly:null,shared:null,complete:true,unknownTotal:true};
+ if(b.ahamo===undefined||b.ahamo===null)return {mode,mine:total,wife:0,ahamo:null,wifeOnly:0,shared:0,complete:false,unknownTotal:false};
+ const ahamo=Number(b.ahamo),wifeOnly=Number(b.wifeOnly||0),shared=total-ahamo-wifeOnly;
+ if(shared<0)return {mode,mine:total,wife:0,ahamo:null,wifeOnly:0,shared:0,complete:false,unknownTotal:false};
+ return {mode,mine:ahamo+Math.ceil(shared/2),wife:wifeOnly+Math.floor(shared/2),ahamo,wifeOnly,shared,complete:true,unknownTotal:false};
+}
+function eventDelta(e){return e.type==='income'?Number(e.amount):-Number(e.amount)}
+function calc(){
+ const lastMonth=monthPlus(currentMonth,1),lastDate=monthEnd(lastMonth),avg=salaryAverage(),startMonth=state.baseDate.slice(0,7);
+ const monthsWithData=[...Object.keys(state.salaryEntries),...Object.keys(state.bills).map(k=>k.split('|')[0]),...state.events.map(e=>e.date.slice(0,7)),...Object.keys(state.savings)].filter(isMonth).sort();
+ const first=monthsWithData.length&&monthsWithData[0]<monthPlus(currentMonth,-12)?monthsWithData[0]:monthPlus(currentMonth,-12);
+ const firstMonth=monthPlus(startMonth,Math.max(-120,monthDistance(startMonth,first)));
+ const events=[],missingSalaries=[],unallocated=[],unknownOliveDates=[];
+ const add=(e,account='main')=>events.push({...e,account,amount:Number(e.amount)});
+ const monthCount=Math.max(0,Math.min(240,monthDistance(firstMonth,lastMonth)+1));
+ for(let i=0;i<monthCount;i++){
+  const month=monthPlus(firstMonth,i),salaryDate=dayInMonth(month,state.salaryDay),entry=state.salaryEntries[month];
+  if(salaryDate<=state.baseDate){if(entry)add({date:salaryDate,title:'給与（手取り）',amount:entry.amount,type:'income',status:entry.status==='confirmed'?'salary-confirmed':'salary-estimated'});}
+  else if(salaryDate<=lastDate){const sal=getSalary(month,avg);if(sal.status==='salary-missing')missingSalaries.push(month);else add({date:salaryDate,title:'給与（手取り）',amount:sal.amount,type:'income',status:sal.status});}
+  for(const card of state.cards){
+   const bill=state.bills[month+'|'+card.id];if(!bill)continue;
+   const due=dayInMonth(month,card.day);if(card.id==='olive'){
+    const parts=sharedSplit(bill),transferDate=localDateShift(due,-Number(state.transferLead||0));
+    if(!parts.complete)unallocated.push(month);
+    const status=!parts.complete?'unallocated':bill.status;
+    add({date:transferDate,title:parts.mode==='personal'?'Olive・折半済み本人負担額':'Olive・本人負担分の振替',amount:parts.mine,type:'expense',status,sourceMonth:month});
+    add({date:transferDate,title:'本人から共通口座へ',amount:parts.mine,type:'income',status,sourceMonth:month},'shared');
+    if(parts.unknownTotal){unknownOliveDates.push(due);}
+    else {
+      add({date:transferDate,title:'妻から共通口座へ（予定）',amount:parts.wife,type:'income',status:'assumed-wife',sourceMonth:month},'shared');
+      add({date:due,title:'Olive引き落とし',amount:bill.amount,type:'expense',status:bill.status,sourceMonth:month},'shared');
+    }
+   }else add({date:due,title:card.name,amount:bill.amount,type:'expense',status:bill.status,sourceMonth:month});
+  }
+ }
+ for(const e of state.events)if(e.date>=firstMonth+'-01'&&e.date<=lastDate)add({...e,status:'oneoff'});
+ events.sort((a,b)=>a.date.localeCompare(b.date)||a.account.localeCompare(b.account)||a.title.localeCompare(b.title));
+ const mainEvents=events.filter(e=>e.account==='main'),sharedEvents=events.filter(e=>e.account==='shared');
+ const anchors=[{date:state.baseDate,amount:Number(state.balance),origin:'start'},...Object.entries(state.savings).filter(([m,v])=>v.status==='actual'&&monthEnd(m)<=dateString(today)&&monthEnd(m)!==state.baseDate).map(([m,v])=>({date:monthEnd(m),amount:Number(v.amount),origin:'actual',month:m}))];
+ function findAnchor(date,omit){return anchors.filter(a=>a.date!==omit).sort((a,b)=>Math.abs(Date.parse(date+'T12:00:00')-Date.parse(a.date+'T12:00:00'))-Math.abs(Date.parse(date+'T12:00:00')-Date.parse(b.date+'T12:00:00'))||(a.origin==='start'?-1:1))[0]}
+ function movement(list,start,end){if(start===end)return 0;let value=0;if(start<end){for(const e of list)if(e.date>start&&e.date<=end)value+=eventDelta(e)}else for(const e of list)if(e.date>end&&e.date<=start)value-=eventDelta(e);return value}
+ function inferMain(date,exclude){const anchor=findAnchor(date,exclude);if(!anchor)return null;const lo=date<anchor.date?date:anchor.date,hi=date>anchor.date?date:anchor.date;
+  const tx=mainEvents.filter(e=>e.date>lo&&e.date<=hi);const missingSalaryMonths=[];const mstart=lo.slice(0,7),mend=hi.slice(0,7);
+  for(let i=0;i<=monthDistance(mstart,mend);i++){const m=monthPlus(mstart,i),pay=dayInMonth(m,state.salaryDay);if(pay>lo&&pay<=hi&&!state.salaryEntries[m]&&pay<=state.baseDate)missingSalaryMonths.push(m)}
+  return {value:anchor.amount+movement(mainEvents,anchor.date,date),anchor,transactions:tx.length,missingSalaryMonths};
+ }
+ const historicalMonths=[];
+ for(let i=0;i<monthDistance(firstMonth,startMonth);i++){
+  const month=monthPlus(firstMonth,i),end=monthEnd(month),saving=state.savings[month],real= saving&&saving.status==='actual',calculated=inferMain(end,real?end:undefined);
+  const missing=state.cards.filter(c=>!Object.prototype.hasOwnProperty.call(state.bills,month+'|'+c.id)).map(c=>c.name);
+  const missingSalary=!state.salaryEntries[month];
+  const empty=!real&&(!calculated||calculated.transactions===0||calculated.missingSalaryMonths.length>0);
+  const discrepancy=real&&calculated?Number(saving.amount)-calculated.value:null;
+  historicalMonths.push({month,balance:real?Number(saving.amount):empty?null:calculated.value,calculatedBalance:calculated?.value??null,missing,missingSalary,saved:saving||null,historical:true,source:real?'actual':empty?'missing':'reconstructed',incomplete:!real&&!!(missing.length||missingSalary||calculated.missingSalaryMonths.length),discrepancy});
+ }
+ // 基準日以降に実績が登録されていれば、その実績からさらに先を予測する。
+ const forwardMain=mainEvents.filter(e=>e.date>state.baseDate&&e.date<=lastDate);
+ const forwardShared=sharedEvents.filter(e=>e.date>state.baseDate&&e.date<=lastDate);
+ let running=Number(state.balance),min=running,minDate=state.baseDate,idx=0;
+ const monthRows=[];const detailedMain=[];
+ for(let i=0;i<Math.max(0,monthDistance(startMonth,lastMonth)+1);i++){
+  const month=monthPlus(startMonth,i),end=monthEnd(month);
+  while(idx<forwardMain.length&&forwardMain[idx].date<=end){const e=forwardMain[idx++];running+=eventDelta(e);e.balance=running;detailedMain.push(e);if(running<min){min=running;minDate=e.date}}
+  const saving=state.savings[month],actual=saving&&saving.status==='actual'&&end<=dateString(today)&&end>state.baseDate;
+  let adjustment=0;if(actual){adjustment=Number(saving.amount)-running;running=Number(saving.amount);detailedMain.push({date:end,title:'登録済み月末実績との照合差額',amount:adjustment,type:'adjustment',status:'reconciliation',balance:running,account:'main'});if(running<min){min=running;minDate=end}}
+  const missing=state.cards.filter(c=>dayInMonth(month,c.day)>state.baseDate&&!state.bills[month+'|'+c.id]).map(c=>c.name);
+  const missingSalary=missingSalaries.includes(month);
+  const source=actual?'actual':end===state.baseDate?(state.baseStatus==='actual'?'actual':'estimate'):month<currentMonth?'reconstructed':'forecast';
+  monthRows.push({month,balance:running,missing,missingSalary,saved:saving||null,historical:month<currentMonth,source,incomplete:!!(missing.length||missingSalary),discrepancy:actual?adjustment:null});
+ }
+ // 過去の日別残高を開始日または記録済みの残高から算出（推計扱い）
+ const pastTransactions=mainEvents.filter(e=>e.date<=state.baseDate);
+ const historicalMain=pastTransactions.map((e,i)=>{const dayEnd=inferMain(e.date)?.value;const afterSameDay=pastTransactions.slice(i+1).filter(x=>x.date===e.date).reduce((sum,x)=>sum+eventDelta(x),0);return {...e,balance:dayEnd===undefined?null:dayEnd-afterSameDay,historical:true}});
+ // 共通口座は開始残高が未設定なら残高自体を表示しない。
+ let sharedMonths=[],sharedHistory=[];
+ if(state.sharedBalance!==null){let sharedRun=Number(state.sharedBalance);for(const e of forwardShared){sharedRun+=eventDelta(e);e.balance=unknownOliveDates.some(d=>d>state.baseDate&&d<=e.date)?null:sharedRun}for(const e of sharedEvents.filter(e=>e.date<=state.baseDate))sharedHistory.push({...e,balance:unknownOliveDates.some(d=>d>e.date&&d<=state.baseDate)?null:Number(state.sharedBalance)+movement(sharedEvents,state.baseDate,e.date),historical:true});}
+ for(const m of [...historicalMonths,...monthRows]){
+  let val=null;const end=monthEnd(m.month),lo=end<state.baseDate?end:state.baseDate,hi=end>state.baseDate?end:state.baseDate;if(state.sharedBalance!==null&&!unknownOliveDates.some(d=>d>lo&&d<=hi))val=Number(state.sharedBalance)+movement(sharedEvents,state.baseDate,end);
+  sharedMonths.push({month:m.month,balance:val});
+ }
+ return {unknownOliveDates,events:[...historicalMain,...detailedMain].sort((a,b)=>a.date.localeCompare(b.date)),sharedEvents:[...sharedHistory,...forwardShared].sort((a,b)=>a.date.localeCompare(b.date)),sharedMonths,months:[...historicalMonths,...monthRows],minimum:min,minimumDate:minDate,avg,missingSalaries,unallocated,historicalMonths};
+}
+function statusLabel(status){return ({'salary-confirmed':'<span class="pill ok">給与・確定</span>','salary-estimated':'<span class="pill">給与・手入力</span>','salary-average':'<span class="pill">給与・平均予測</span>','unallocated':'<span class="pill">内訳未配分</span>','assumed-wife':'<span class="pill">妻入金予定</span>','reconciliation':'<span class="pill">実績との差額</span>',confirmed:'<span class="pill ok">確定</span>',estimated:'<span class="pill">未確定</span>','saving-actual':'<span class="pill ok">貯金・実績</span>','saving-estimate':'<span class="pill">貯金・見込み</span>'})[status]||'—'}
+let selectedChartMonth=null;
+let chartPoints=[];
+function renderChartSelected(){const p=chartPoints.find(x=>x.month===selectedChartMonth);if(!p){$('chartSelectedMonth').textContent='月を選択';$('chartSelectedBalance').textContent='—';$('chartSelectedType').textContent='未入力';return}
+$('chartSelectedMonth').textContent=p.month+'末';$('chartSelectedBalance').textContent=p.value===null?'未登録':yen(p.value);$('chartSelectedType').textContent=p.type==='actual'?'貯金実績／基準':p.type==='estimate'?'手入力見込み':p.type==='reconstructed'?'参考推計（逆算）':p.type==='forecast'?'予測':'未登録';}
+function renderLineChart(r){const scroller=$('chartScroll'),oldScroll=scroller.scrollLeft,wasAtEnd=scroller.scrollWidth-scroller.clientWidth-oldScroll<65;
+const firstSaved=Object.keys(state.savings).filter(isMonth).sort()[0];const earliest=monthPlus(currentMonth,-12),first=r.months[0]?.month||earliest,last=monthPlus(currentMonth,1);
+const count=Math.min(240,Math.max(0,monthDistance(first,last)+1));const byMonth=new Map(r.months.map(m=>[m.month,m]));
+chartPoints=Array.from({length:count},(_,i)=>{let month=monthPlus(first,i),entry=state.savings[month],computed=byMonth.get(month),isFuture=month>=currentMonth;return {month,value:computed?computed.balance:entry?Number(entry.amount):null,type:computed?computed.source:entry?(entry.status==='actual'?'actual':'estimate'):'missing',isFuture}});
+const known=chartPoints.filter(p=>p.value!==null);const min=Math.min(0,...known.map(p=>p.value)),max=Math.max(100000,...known.map(p=>p.value)),span=Math.max(1,max-min);const step=84,left=54,width=Math.max(420,left+count*step+24),top=32,height=245,bottom=190;
+const xx=i=>left+i*step,yy=v=>top+(max-v)/span*(bottom-top);
+const lines=[];for(let i=0;i<4;i++){let v=max-(max-min)*i/3,y=yy(v);lines.push(`<line x1="${left-12}" y1="${y}" x2="${width-18}" y2="${y}" stroke="#dae4e3" stroke-dasharray="3 5"/><text x="${left-16}" y="${y+4}" text-anchor="end" font-size="10" fill="#73858a">${Math.round(v/10000)}万</text>`)}
+let segments=[],segment=[];for(let i=0;i<chartPoints.length;i++){let p=chartPoints[i];if(p.value===null){if(segment.length>1)segments.push(segment);segment=[]}else{segment.push({i,p})}}if(segment.length>1)segments.push(segment);
+const paths=[];for(let seg of segments){for(let j=1;j<seg.length;j++){const prev=seg[j-1],cur=seg[j],future=cur.p.type==='forecast'||prev.p.type==='forecast';paths.push(`<line x1="${xx(prev.i)}" y1="${yy(prev.p.value)}" x2="${xx(cur.i)}" y2="${yy(cur.p.value)}" stroke="${future?'#2d8c91':(cur.p.type==='reconstructed'||prev.p.type==='reconstructed'?'#d49a36':'#16816a')}" stroke-width="3" stroke-linecap="round" ${future?'stroke-dasharray="6 5"':''}/>`)} }
+const dots=chartPoints.map((p,i)=>{const x=xx(i),ym=p.value===null?bottom:yy(p.value),label=p.month.slice(2).replace('-','/');return `<text x="${x}" y="${height-17}" text-anchor="middle" fill="#546c73" font-size="11">${label}</text>${p.value===null?'':`<circle cx="${x}" cy="${ym}" r="10" fill="transparent" data-chart-month="${p.month}" style="cursor:pointer"/><circle cx="${x}" cy="${ym}" r="4.5" fill="${p.type==='actual'?'#16816a':p.type==='reconstructed'?'#d49a36':'white'}" stroke="${p.type==='actual'?'#16816a':p.type==='reconstructed'?'#d49a36':'#2d8c91'}" stroke-width="2.5" pointer-events="none"/>`}`}).join('');
+$('chartCanvas').innerHTML=`<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="月別貯金残高の折れ線グラフ">${lines.join('')}${paths.join('')}${dots}</svg>`;
+if(!selectedChartMonth||!chartPoints.some(p=>p.month===selectedChartMonth))selectedChartMonth=chartPoints.some(p=>p.month===last)?last:chartPoints.at(-1)?.month;renderChartSelected();
+const current=byMonth.get(currentMonth),next=byMonth.get(last);
+$('months').innerHTML=[current,next].filter(Boolean).map(m=>`<div class="monthline"><div class="sectionhead"><span>${esc(m.month)}末 ${m.source==='actual'?'<span class="pill ok">確定実績</span>':'<span class="pill">'+(m.source==='reconstructed'?'参考推計':m.source==='estimate'?'基準・見込み':'予測')+'</span>'}</span><div class="row"><strong>${yen(m.balance)}</strong><button class="secondary" data-savings-month="${m.month}">貯金入力</button><button class="secondary" data-month="${m.month}">明細</button></div></div></div>`).join('');
+requestAnimationFrame(()=>{scroller.scrollLeft=wasAtEnd||!scroller.dataset.initialized?scroller.scrollWidth-scroller.clientWidth:Math.min(oldScroll,scroller.scrollWidth-scroller.clientWidth);scroller.dataset.initialized='yes'});
+}
+function renderDashboard(){let r=calc(),last=r.months.at(-1);$('baselineInfo').textContent='残高の基準：'+state.baseDate+' 時点 '+yen(state.balance)+'（'+(state.baseStatus==='actual'?'照合済みの実績':'確認した見込み')+'）。この日以前の入出金は基準残高に含まれ、翌日以降の入出金だけを加減算します。';
+$('future').textContent=yen(last.balance);$('future').classList.toggle('negative',last.balance<0);$('futureDate').textContent=last.month+'末の予測';
+$('minimum').textContent=yen(r.minimum);$('minimum').classList.toggle('negative',r.minimum<0);$('minimumDate').textContent=r.minimumDate+' 時点';
+$('avgSalary').textContent=r.avg.amount===null?'未算出':yen(r.avg.amount);$('avgCount').textContent=r.avg.used+'件';$('avgSpan').textContent=state.averageWindow==='all'?'全件':'直近'+state.averageWindow+'件';
+$('avgNote').textContent=r.avg.amount===null?'確定給与の履歴を1件以上登録すると、未来の未入力月に平均を使えるようになります。':'平均対象：'+r.avg.months.join('、')+'。ボーナス・未確定給与は対象外です。';
+let missingCardCount=r.months.filter(m=>!m.historical).reduce((n,m)=>n+m.missing.length,0),missingSalaryCount=r.missingSalaries.length,alarms=[];
+if(missingSalaryCount)alarms.push(`平均を計算できない給与月が${missingSalaryCount}件あります。その月は給与を加算していません。`);
+if(!Object.keys(state.salaryEntries).length&&!Object.keys(state.bills).length&&!state.events.length)alarms.push('給与・カードの登録データがありません。旧版に入力していた場合は、旧版のJSONバックアップを設定画面から復元してください。残高基準日と給与・カードの入力状況を確認してください。');
+if(missingCardCount)alarms.push(`未入力のカード請求が${missingCardCount}件あります。未入力は計算上0円としているため、予測残高が高めに表示される可能性があります。`);
+if(r.historicalMonths.some(m=>m.incomplete))alarms.push('過去の推計には未登録の給与・カードが含まれます。実績ではありません。');if(r.unallocated.length)alarms.push('Oliveを請求総額で入力し、ahamo分が未登録の月があります（'+[...new Set(r.unallocated)].slice(-5).join('、')+'）。暫定的に全額を本人負担として計算しています。');if(r.minimum<0)alarms.push('残高がマイナスになる予定があります。');
+$('alerts').textContent=alarms.length?alarms.join(' '):'給与の平均と登録済みの請求額を使って計算しています。実際の給与・未登録支出とは異なる場合があります。';
+$('alerts').style.background=alarms.length?'#fff5df':'#e5f5eb';
+renderLineChart(r);renderShared(r);
+let old=$('monthSelect').value;$('monthSelect').innerHTML=r.months.map(m=>`<option value="${m.month}">${m.month}</option>`).join('');$('monthSelect').value=r.months.some(m=>m.month===old)?old:currentMonth;renderTimeline(r)}
+function renderTimeline(r=calc()){let month=$('monthSelect').value;$('timelineTitle').textContent=month+' の日付別残高';let rows=r.events.filter(e=>e.date.startsWith(month));$('timeline').innerHTML=rows.map(e=>`<tr><td>${esc(e.date.slice(5))}</td><td>${esc(e.title)}</td><td>${statusLabel(e.status)}</td><td class="num">${e.type==='adjustment'?(e.amount>=0?'+':'−'):(e.type==='income'?'+':'−')}${yen(Math.abs(e.amount))}</td><td class="num">${e.balance===null?'—':yen(e.balance)}</td></tr>`).join('')||'<tr><td colspan="5">この月の入出金予定はありません。</td></tr>'; const item=r.months.find(m=>m.month===month);if(item&&item.historical){$('timeline').innerHTML+=`<tr><td colspan="5" class="muted">月末残高：${item.balance===null?'資料不足':yen(item.balance)}（${item.source==='actual'?'記録済み実績':item.source==='estimate'?'記録済み見込み':'参考推計（逆算）'}）。${item.missingSalary?'給与未入力。':''}${item.missing.length?'カード未入力：'+esc(item.missing.join('、'))+'。':''}未登録の収支があると正確な実績にはなりません。</td></tr>`;}}
+function renderShared(r){
+ const cur=r.sharedMonths.find(m=>m.month===currentMonth),next=r.sharedMonths.find(m=>m.month===monthPlus(currentMonth,1));
+ $('sharedCurrent').textContent=cur?.balance===null||!cur?'未設定':yen(cur.balance);
+ $('sharedNext').textContent=next?.balance===null||!next?'未設定':yen(next.balance);
+ $('sharedHint').textContent=state.sharedBalance===null?'共通口座の開始残高が未設定です。設定画面で入力すると推移が表示されます。':r.unknownOliveDates.length?'折半済み本人負担額だけ入力した月は請求総額・妻の入金額が不明なので、共通口座全体の残高は未算出です。メイン口座の予測には本人負担額をそのまま反映しています。':'妻の負担額が予定どおり入金されると仮定した残高です。振替日は引落'+(state.transferLead===0?'当日':state.transferLead+'日前')+'です。';
+ $('sharedBalance').value=state.sharedBalance===null?'':state.sharedBalance;
+ $('transferLead').value=String(state.transferLead);
+ $('sharedRows').innerHTML=Object.entries(state.bills).filter(([k])=>k.endsWith('|olive')).sort((a,b)=>b[0].localeCompare(a[0])).map(([key,b])=>{const p=sharedSplit(b);return `<tr><td>${esc(key.split('|')[0])}</td><td class="num">${yen(b.amount)}</td><td class="num">${yen(p.mine)}</td><td class="num">${p.wife===null?'—':yen(p.wife)}</td><td>${p.unknownTotal?'<span class="pill ok">折半後・本人負担額</span>':p.complete?'ahamo '+yen(p.ahamo)+'／折半 '+yen(p.shared):'<span class="pill">総額・未配分</span>'}</td></tr>`}).join('')||'<tr><td colspan="5">Oliveの登録額がまだありません。</td></tr>';
+ const old=$('sharedMonth').value;const months=r.sharedMonths.map(m=>m.month);$('sharedMonth').innerHTML=months.map(m=>`<option value="${m}">${m}</option>`).join('');$('sharedMonth').value=months.includes(old)?old:currentMonth;
+ renderSharedTimeline(r);
+}
+function renderSharedTimeline(r=calc()){
+ const month=$('sharedMonth').value;
+ $('sharedTimeline').innerHTML=r.sharedEvents.filter(e=>e.date.startsWith(month)).map(e=>`<tr><td>${esc(e.date.slice(5))}</td><td>${esc(e.title)} ${statusLabel(e.status)}</td><td class="num">${e.type==='income'?'+':'−'}${yen(e.amount)}</td><td class="num">${e.balance===undefined||e.balance===null?'—':yen(e.balance)}</td></tr>`).join('')||'<tr><td colspan="4">この月の共通口座の入出金は未登録です。</td></tr>';
+}
+function loadBillEditor(){const b=state.bills[$('cardMonth').value+'|'+$('cardName').value];$('cardAmount').value=b?b.amount:'';$('cardStatus').value=b?.status||'estimated';$('oliveAmountMode').value=b?oliveMode(b):'personal';$('oliveAhamo').value=b&&b.ahamo!==undefined&&b.ahamo!==null?b.ahamo:'';$('oliveWife').value=b?.wifeOnly??0;updateOliveFields()}
+function updateOliveFields(){
+ const show=$('cardName').value==='olive';$('oliveBreakdown').classList.toggle('hidden',!show);
+ const mode=$('oliveAmountMode').value;
+ $('oliveBreakdownInputs').classList.toggle('hidden',mode!=='total');
+ $('cardAmountLabel').textContent=show?(mode==='personal'?'折半後の本人負担額（円）':'Oliveの請求総額（円）'):'請求予定額（円）';
+ $('oliveModeHelp').textContent=mode==='personal'?'入力した額をメイン口座からそのまま差し引きます。すでに折半済みならこちらを選んでください。二重に折半しません。共通口座全体の残高は計算できません。':'Olive全体の請求額を入力し、ahamo分や妻の個人負担額を指定すると本人負担額を計算します。';
+ const total=inputMoney('cardAmount'),a=$('oliveAhamo').value,w=inputMoney('oliveWife'),ahamo=inputMoney('oliveAhamo');
+ $('oliveSharedAmount').textContent=a===''?'ahamo未入力':(total===null||ahamo===null||w===null||total-ahamo-w<0?'金額を確認':yen(total-ahamo-w));
+}
+
+function renderSavings(){const rows=Object.entries(state.savings).sort((a,b)=>b[0].localeCompare(a[0]));$('savingRows').innerHTML=rows.map(([month,v])=>`<tr><td>${esc(month)}</td><td>${v.status==='actual'?'<span class="pill ok">実績</span>':'<span class="pill">見込み</span>'}</td><td class="num">${yen(v.amount)}</td><td><button class="secondary" data-editsaving="${month}">編集</button> <button class="danger" data-delsaving="${month}">削除</button></td></tr>`).join('')||'<tr><td colspan="4">貯金残高はまだ登録されていません。</td></tr>'}
+function renderSalaries(){let a=salaryAverage();$('averageWindow').value=state.averageWindow;$('salaryAvgDetail').textContent=a.amount===null?'まだ平均に使える確定給与がありません。過去の支給月と手取りを「確定」で登録してください。':`現在の平均給与：${yen(a.amount)}（${a.used}件：${a.months.join('、')}）`;
+let start=state.baseDate.slice(0,7),forecast=Array.from({length:Math.max(0,Math.min(240,monthDistance(start,monthPlus(currentMonth,1))+1))},(_,i)=>monthPlus(start,i)),months=[...new Set([...Object.keys(state.salaryEntries),...forecast])].sort();
+$('salaryRows').innerHTML=months.map(month=>{const entry=state.salaryEntries[month],est=getSalary(month,a);const isPast=dayInMonth(month,state.salaryDay)<=state.baseDate;const shown=entry?yen(entry.amount):isPast?'—':est.status==='salary-missing'?'—':yen(est.amount);let label=entry?(entry.status==='confirmed'?'<span class="pill ok">確定・手入力</span>':'<span class="pill">未確定・手入力</span>')+(entry.migrated?' <span class="muted">旧版から移行／要確認</span>':''):isPast?'<span class="muted">未入力</span>':est.status==='salary-average'?'<span class="pill">平均予測</span>':'<span class="pill">未入力</span>';return `<tr><td>${esc(month)}</td><td>${label}</td><td class="num">${shown}</td><td><button class="secondary" data-editsalary="${month}">${entry?'編集':'入力'}</button> ${entry?`<button class="danger" data-delsalary="${month}">削除</button>`:''}</td></tr>`}).join('')}
+function renderCards(){const month=$('cardMonth').value||currentMonth;const existingCard=$('cardName').value;$('cardName').innerHTML=state.cards.map(c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('');if(state.cards.some(c=>c.id===existingCard))$('cardName').value=existingCard;$('cardMonth').value=month;
+ const rows=Object.entries(state.bills).map(([key,b])=>{const [m,id]=key.split('|'),card=state.cards.find(c=>c.id===id);return card?{key,m,card,b}:null}).filter(Boolean).sort((a,b)=>a.m.localeCompare(b.m)||a.card.name.localeCompare(b.card.name));
+ $('cardRows').innerHTML=rows.map(x=>{const spl=x.card.id==='olive'?sharedSplit(x.b):null;return `<tr><td>${esc(x.m)}</td><td>${esc(x.card.name)}</td><td>${x.card.day}日</td><td>${statusLabel(x.b.status)}</td><td class="num">${yen(x.b.amount)}</td><td>${spl?(spl.unknownTotal?'<span class="pill ok">折半済み '+yen(spl.mine)+'</span>':spl.complete?'本人 '+yen(spl.mine):'<span class="pill">内訳未入力</span>'):'—'}</td><td><button class="secondary" data-editbill="${esc(x.key)}">編集</button> <button class="danger" data-delbill="${esc(x.key)}">削除</button></td></tr>`}).join('')||'<tr><td colspan="7">まだ請求額が登録されていません。</td></tr>';
+ loadBillEditor();
+}
+function renderEvents(){$('eventRows').innerHTML=[...state.events].sort((a,b)=>a.date.localeCompare(b.date)).map(e=>`<tr><td>${esc(e.date)}</td><td>${esc(e.title)}</td><td>${e.type==='income'?'入金':'出金'}</td><td class="num">${yen(e.amount)}</td><td><button class="danger" data-delevent="${esc(e.id)}">削除</button></td></tr>`).join('')||'<tr><td colspan="5">臨時入出金はありません。</td></tr>'}
+function renderSettings(){for(let id of ['baseDate','balance','salaryDay'])$(id).value=state[id];$('baseStatus').value=state.baseStatus;$('cardDays').innerHTML=state.cards.map(c=>`<div class="row" style="margin:8px 0"><span style="min-width:100px">${esc(c.name)}</span><input style="width:110px" type="number" min="1" max="31" data-day="${esc(c.id)}" value="${c.day}"><span class="muted">日（初期値は仮設定）</span></div>`).join('')}
+function renderAll(){renderDashboard();renderSavings();renderSalaries();renderCards();renderEvents();renderSettings()}
+function navigate(view){document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===view));for(let id of ['dashboard','salaries','savings','cards','events','shared','settings'])$(id).classList.toggle('hidden',id!==view)}
+document.querySelectorAll('[data-view]').forEach(btn=>btn.onclick=()=>navigate(btn.dataset.view));document.querySelectorAll('[data-goto]').forEach(btn=>btn.onclick=()=>navigate(btn.dataset.goto));
+$('chartOlder').onclick=()=>{$('chartScroll').scrollBy({left:-420,behavior:'smooth'})};
+$('chartLatest').onclick=()=>{$('chartScroll').scrollTo({left:$('chartScroll').scrollWidth,behavior:'smooth'})};
+let chartDrag=null,chartMoved=false;
+$('chartScroll').addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button===0){chartDrag={x:e.clientX,left:$('chartScroll').scrollLeft};chartMoved=false;$('chartScroll').classList.add('dragging')}});
+window.addEventListener('pointermove',e=>{if(!chartDrag)return;const diff=e.clientX-chartDrag.x;if(Math.abs(diff)>5)chartMoved=true;$('chartScroll').scrollLeft=chartDrag.left-diff});
+window.addEventListener('pointerup',()=>{chartDrag=null;$('chartScroll').classList.remove('dragging')});
+$('chartCanvas').addEventListener('click',e=>{const dot=e.target.closest('[data-chart-month]');if(!dot)return;if(chartMoved){chartMoved=false;return}selectedChartMonth=dot.dataset.chartMonth;renderChartSelected()});
+$('monthSelect').onchange=()=>renderTimeline();$('months').onclick=e=>{let save=e.target.closest('[data-savings-month]'),b=e.target.closest('[data-month]');if(save){let m=save.dataset.savingsMonth,entry=state.savings[m];$('savingMonth').value=m;$('savingAmount').value=entry?entry.amount:'';$('savingStatus').value=entry?entry.status:(m<currentMonth?'actual':'estimate');navigate('savings');$('savingAmount').focus()}else if(b){$('monthSelect').value=b.dataset.month;renderTimeline();$('timelineTitle').scrollIntoView({behavior:'smooth',block:'center'})}};
+$('saveSaving').onclick=()=>{const month=$('savingMonth').value,amount=$('savingAmount').value;if(!isMonth(month)||inputMoney('savingAmount')===null){alert('対象月と月末の貯金額を正しく入力してください');return}state.savings[month]={amount:inputMoney('savingAmount'),status:$('savingStatus').value};persist();renderAll();$('savingMonth').value=month;alert('月末貯金残高を保存しました')};
+$('savingRows').onclick=e=>{const edit=e.target.closest('[data-editsaving]'),del=e.target.closest('[data-delsaving]');if(edit){const month=edit.dataset.editsaving,v=state.savings[month];$('savingMonth').value=month;$('savingAmount').value=v.amount;$('savingStatus').value=v.status;document.querySelector('#savings .card').scrollIntoView({behavior:'smooth',block:'start'})}if(del&&confirm('この月の貯金残高を削除しますか？')){delete state.savings[del.dataset.delsaving];persist();renderAll()}};
+$('saveSalary').onclick=()=>{let m=$('salaryMonth').value,value=$('salaryAmount').value;if(!isMonth(m)||!validAmount(inputMoney('salaryAmount'))){alert('支給月と0円以上の給与を入力してください');return}state.salaryEntries[m]={amount:inputMoney('salaryAmount'),status:$('salaryStatus').value};persist();renderAll();$('salaryMonth').value=m;$('salaryAmount').value='';alert('給与を保存しました')};
+$('averageWindow').onchange=e=>{state.averageWindow=e.target.value;persist();renderDashboard();renderSalaries()};
+$('salaryRows').onclick=e=>{let edit=e.target.closest('[data-editsalary]'),del=e.target.closest('[data-delsalary]');if(edit){let month=edit.dataset.editsalary,entry=state.salaryEntries[month];$('salaryMonth').value=month;$('salaryAmount').value=entry?entry.amount:'';$('salaryStatus').value=entry?entry.status:'confirmed';document.querySelector('#salaries .card').scrollIntoView({behavior:'smooth',block:'start'});$('salaryAmount').focus()}if(del&&confirm('この月の給与を削除しますか？')){delete state.salaryEntries[del.dataset.delsalary];persist();renderAll()}};
+$('cardName').addEventListener('change',loadBillEditor);$('cardMonth').addEventListener('change',loadBillEditor);$('oliveAmountMode').addEventListener('change',updateOliveFields);
+$('cardAmount').addEventListener('input',updateOliveFields);$('oliveAhamo').addEventListener('input',updateOliveFields);$('oliveWife').addEventListener('input',updateOliveFields);
+$('saveCard').onclick=()=>{
+ const amount=$('cardAmount').value,month=$('cardMonth').value,id=$('cardName').value;
+ if(!validAmount(inputMoney('cardAmount'))||!isMonth(month)){alert('対象月と0円以上の請求額を入力してください');return}
+ const bill={amount:inputMoney('cardAmount'),status:$('cardStatus').value};
+ if(id==='olive'){
+  bill.mode=$('oliveAmountMode').value;
+  if(bill.mode==='total'){
+   const a=$('oliveAhamo').value,w=$('oliveWife').value;
+   if(a!==''&&!validAmount(inputMoney('oliveAhamo'))){alert('ahamoの金額を確認してください');return}
+   if(!validAmount(inputMoney('oliveWife'))){alert('妻の個人負担額を確認してください');return}
+   if(inputMoney('oliveWife')>bill.amount||(a!==''&&inputMoney('oliveAhamo')+inputMoney('oliveWife')>bill.amount)){alert('個人負担額が請求総額を超えています');return}
+   bill.ahamo=a===''?null:inputMoney('oliveAhamo');bill.wifeOnly=inputMoney('oliveWife');
+  }
+ }
+ state.bills[month+'|'+id]=bill;persist();renderAll();$('cardMonth').value=month;alert('請求額を保存しました')
+};
+$('cardRows').onclick=e=>{
+ const edit=e.target.closest('[data-editbill]'),del=e.target.closest('[data-delbill]');
+ if(edit){const [m,id]=edit.dataset.editbill.split('|'),b=state.bills[edit.dataset.editbill];$('cardMonth').value=m;$('cardName').value=id;$('cardAmount').value=b.amount;$('cardStatus').value=b.status;$('oliveAmountMode').value=oliveMode(b);$('oliveAhamo').value=b.ahamo===undefined||b.ahamo===null?'':b.ahamo;$('oliveWife').value=b.wifeOnly??0;updateOliveFields();document.querySelector('#cards .card').scrollIntoView({behavior:'smooth',block:'start'})}
+ if(del&&confirm('この請求額を削除しますか？')){delete state.bills[del.dataset.delbill];persist();renderAll()}
+};
+$('sharedMonth').onchange=()=>renderSharedTimeline();
+$('saveSharedSettings').onclick=()=>{let x=$('sharedBalance').value,lead=Number($('transferLead').value);if(x!==''&&inputMoney('sharedBalance')===null){alert('共通口座残高を正しく入力してください');return}state.sharedBalance=x===''?null:inputMoney('sharedBalance');state.transferLead=lead;persist();renderAll();alert('共通口座の設定を保存しました')};
+
+$('addEvent').onclick=()=>{let date=$('eventDate').value,title=$('eventTitle').value.trim(),amount=$('eventAmount').value;if(!isDate(date)||!title||!validAmount(inputMoney('eventAmount'))||inputMoney('eventAmount')<=0){alert('日付・内容・1円以上の金額を入力してください');return}state.events.push({id:'e'+Date.now()+Math.random().toString(36).slice(2),date,title,amount:inputMoney('eventAmount'),type:$('eventKind').value});persist();$('eventTitle').value='';$('eventAmount').value='';renderAll()};
+$('eventRows').onclick=e=>{let b=e.target.closest('[data-delevent]');if(b&&confirm('この予定を削除しますか？')){state.events=state.events.filter(x=>x.id!==b.dataset.delevent);persist();renderAll()}};
+$('saveSettings').onclick=()=>{if(!isDate($('baseDate').value)||!validDay(Number($('salaryDay').value))||inputMoney('balance')===null){alert('開始日、開始残高、給料日を確認してください');return}state.baseDate=$('baseDate').value;state.balance=inputMoney('balance');state.salaryDay=Number($('salaryDay').value);state.baseStatus=$('baseStatus').value;persist();renderAll();alert('設定を保存しました')};
+$('useNovAnchor').onclick=()=>{if(!confirm('計算の基準日を今日に変更しますか？ 残高は現在の値を維持します。'))return;state.baseDate=dateString(new Date());persist();renderAll();alert('基準日を今日に変更しました。正しい基準残高も合わせて確認してください。')};
+$('saveDays').onclick=()=>{let inputs=[...document.querySelectorAll('[data-day]')];if(inputs.some(i=>!validDay(Number(i.value)))){alert('引落日は1〜31で入力してください');return}for(let i of inputs)state.cards.find(c=>c.id===i.dataset.day).day=Number(i.value);persist();renderAll();alert('引落日を保存しました')};
+$('export').onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='mirai_balance_backup_'+dateString(today)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
+$('import').onchange=async e=>{let file=e.target.files[0];if(!file)return;try{let x=migrate(JSON.parse(await file.text()));if(!validState(x))throw Error('データ形式が正しくありません');if(confirm('現在のデータをバックアップ内容で置き換えますか？')){state=x;persist();renderAll()}}catch(err){alert('読み込みに失敗しました: '+err.message)}e.target.value=''};
+$('reset').onclick=()=>{if(confirm('すべての入力データを初期化します。よろしいですか？')){state=defaults();persist();renderAll()}};
+initMoneyInputs();$('savingMonth').value=monthPlus(currentMonth,-1);$('salaryMonth').value=currentMonth;$('cardMonth').value=currentMonth;$('eventDate').value=dateString(today);renderAll();
+
+</script><script>
+if ('serviceWorker' in navigator && (location.protocol==='https:' || location.hostname==='localhost')) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(e=>console.warn('オフライン登録に失敗',e)));
+}
+</script></body></html>
