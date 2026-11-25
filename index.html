@@ -28,9 +28,16 @@ main{padding-bottom:calc(100px + env(safe-area-inset-bottom))}
 .pwa-notice{font-size:12px;line-height:1.65;padding:11px 13px;border-radius:11px;color:#3d665d;background:#e6f3ef;margin-bottom:12px}
 .number,.smallnum,.kpi .value,input[data-money]{font-variant-numeric:tabular-nums}
 @media(max-width:720px){main{margin-top:12px}header{border-bottom-left-radius:14px;border-bottom-right-radius:14px}.card{margin-bottom:12px}.chart-scroller{min-height:200px}.sectionhead{flex-wrap:wrap}}
+
+/* PWA 0.2: 横スワイプとiPhone用データ復元 */
+body{touch-action:pan-y} .chart-scroller,.tablewrap,.topnav{touch-action:auto}
+.restore-box{margin-top:16px;padding:16px;border:1px solid #c9e1dc;border-radius:12px;background:#f4faf8}
+.restore-box .btnrow{margin:12px 0}.restore-box textarea{display:block;width:100%;min-height:125px;font-family:ui-monospace,monospace;font-size:12px;line-height:1.5;margin:9px 0}
+.restore-box button{min-height:44px}.restore-file{font-size:16px;max-width:100%;width:100%;margin:10px 0;padding:8px;background:#fff;border:1px solid #c8d8d2;border-radius:8px}
+.restore-status{font-size:13px;line-height:1.6;color:#225d52}
 </style></head>
 <body>
-<header><h1>ミライ残高 <small style="font-size:12px">PWA試用版</small></h1></header>
+<header><h1>ミライ残高 <small style="font-size:12px">PWA試用版 0.2</small></h1></header>
 <main><div class="pwa-notice" id="pwaInfo">このPWAは旧Web版を基にした試用版です。iPhone版のデータを使う場合は「設定・データ」からJSONを復元してください。データはこの端末内に保存されます。</div>
 <div class="calc-guidance" role="note"><strong>金額欄は電卓式で入力できます。</strong> 例：<code>50000+12000</code>、<code>(80000-10000)/2</code>、<code>3000*2</code>。入力中に計算結果を表示し、保存時は金額のみ記録します（1円未満は四捨五入）。</div>
 <nav class="topnav" aria-label="アプリの画面切り替え">
@@ -68,8 +75,17 @@ main{padding-bottom:calc(100px + env(safe-area-inset-bottom))}
 <section id="cards" class="hidden"><div class="card"><h2>カード請求額の登録</h2><p class="note">現時点の請求予定額を入力し、確定後に上書きできます。Oliveは折半後の本人負担額をそのまま入力する方式が標準です。未入力と0円は区別します。</p><div class="form4"><div><label>対象月（引落月）</label><input type="month" id="cardMonth"></div><div><label>カード</label><select id="cardName"></select></div><div><label for="cardAmount" id="cardAmountLabel">請求予定額（円）</label><input type="text" id="cardAmount" placeholder="例: 70000" inputmode="decimal" autocomplete="off" data-money="cardAmount"></div><div><label>状態</label><select id="cardStatus"><option value="estimated">未確定</option><option value="confirmed">確定</option></select></div></div><div id="oliveBreakdown" class="callout" style="margin-top:12px"><strong>Oliveの金額の入力方式</strong><label for="oliveAmountMode">この欄に入力した金額は？</label><select id="oliveAmountMode"><option value="personal">すでに折半した本人負担額（推奨・従来どおり）</option><option value="total">共通カードの請求総額（内訳から負担額を計算）</option></select><p class="inlinehelp" id="oliveModeHelp"></p><div id="oliveBreakdownInputs"><div class="form3"><div><label for="oliveAhamo">ahamo：本人が全額負担（円）</label><input id="oliveAhamo" type="text" placeholder="未入力＝未配分" inputmode="decimal" autocomplete="off" data-money="oliveAhamo"></div><div><label for="oliveWife">妻が全額負担する額（円）</label><input id="oliveWife" type="text" value="0" inputmode="decimal" autocomplete="off" data-money="oliveWife"></div><div><label>折半対象額</label><div class="smallnum" id="oliveSharedAmount">—</div></div></div><p class="inlinehelp">ドコモ光などは折半対象に含めます。ahamo以外に個人負担があればそれぞれの欄へ入力してください。残額を半分ずつ負担します。</p></div></div>
 <div class="btnrow" style="margin-top:12px"><button id="saveCard">この月の請求額を保存</button><span class="muted">同じ月・カードを再保存すると上書き</span></div></div><div class="card"><h2>登録済みのカード請求</h2><div class="tablewrap"><table><thead><tr><th>引落月</th><th>カード</th><th>引落日</th><th>状態</th><th class="num">請求額</th><th>個人負担</th><th></th></tr></thead><tbody id="cardRows"></tbody></table></div></div></section>
 <section id="events" class="hidden"><div class="card"><h2>臨時の入出金を追加</h2><p class="note">ボーナス、指輪代金、旅行費などはこちら。給与の平均にボーナスは含まれません。</p><div class="form4"><div><label>日付</label><input type="date" id="eventDate"></div><div><label>内容</label><input id="eventTitle" placeholder="例: ボーナス、旅行、指輪"></div><div><label>金額（円）</label><input type="text" id="eventAmount" inputmode="decimal" autocomplete="off" data-money="eventAmount"></div><div><label>種類</label><select id="eventKind"><option value="expense">支出</option><option value="income">収入</option></select></div></div><button id="addEvent" style="margin-top:12px">予定を追加</button></div><div class="card"><h2>登録済みの臨時入出金</h2><div class="tablewrap"><table><thead><tr><th>日付</th><th>内容</th><th>種類</th><th class="num">金額</th><th></th></tr></thead><tbody id="eventRows"></tbody></table></div></div></section>
-<section id="settings" class="hidden"><div class="card"><h2>残高・給料日の設定</h2><div class="form3"><div><label>残高の基準日</label><input type="date" id="baseDate"></div><div><label>基準日時点の残高（円）</label><input type="text" id="balance" inputmode="decimal" autocomplete="off" data-money="balance"></div><div><label>給料日（1〜31）</label><input type="number" min="1" max="31" id="salaryDay"></div></div><p class="note">基準日の残高は、その日までの給与・引き落としを反映した金額を設定してください。過去の履歴は参考推計です。</p><p class="note">開始残高には計算開始日までの入出金が反映済みとします。同日の入出金は二重計上防止のため除外します。31日など存在しない日は月末に調整します。給与は「給与入力」から月ごとに登録します。</p><div class="row" style="margin:10px 0"><div><label for="baseStatus">基準残高の状態</label><select id="baseStatus"><option value="estimate">見込み（まだ月末になっていない・未照合）</option><option value="actual">実績（銀行残高と照合済み）</option></select></div><button type="button" id="useNovAnchor" class="secondary">基準日を本日に設定</button></div><p class="inlinehelp">基準日を変更する際は、既に反映済みの給与・カード・臨時収支を再加算しないようご注意ください。「11月末を基準に設定」では登録済みの給与・カード情報を消しません。</p><button id="saveSettings">設定を保存</button></div><div class="card"><h2>カードの引き落とし日</h2><p class="note">各カードの引落日を設定します。未入力月は計算上0円となり、予測が不完全であることを警告します。</p><div id="cardDays"></div><button id="saveDays" style="margin-top:12px">引落日を保存</button></div><div class="card"><h2>データのバックアップ</h2><p class="note">データはこのブラウザに保存されますが、ファイルを移動したりブラウザのデータを消したりすると引き継げない場合があります。旧版から移す場合は旧版の「JSONでバックアップ」から書き出して、こちらで読み込んでください。新規データは0円から始まります。iPhone版のJSONバックアップを読み込むか、正しい残高を設定してください。旧版のJSONを復元すると、その旧版に記録されていた基準日・残高が優先されます。違っていたら設定画面で変更してください。外部同期はありません。</p><div class="row"><button id="export">JSONでバックアップ</button><label style="margin:0"><span class="muted">バックアップを復元：</span><input type="file" id="import" accept=".json,application/json" style="max-width:250px"></label><button class="danger" id="reset">全データを初期化</button></div></div></section>
-<footer class="note">PWA試用版 0.1｜端末内保存・銀行連携なし。データは自動同期されません。定期的にJSONバックアップを保存してください。</footer>
+<section id="settings" class="hidden"><div class="card"><h2>残高・給料日の設定</h2><div class="form3"><div><label>残高の基準日</label><input type="date" id="baseDate"></div><div><label>基準日時点の残高（円）</label><input type="text" id="balance" inputmode="decimal" autocomplete="off" data-money="balance"></div><div><label>給料日（1〜31）</label><input type="number" min="1" max="31" id="salaryDay"></div></div><p class="note">基準日の残高は、その日までの給与・引き落としを反映した金額を設定してください。過去の履歴は参考推計です。</p><p class="note">開始残高には計算開始日までの入出金が反映済みとします。同日の入出金は二重計上防止のため除外します。31日など存在しない日は月末に調整します。給与は「給与入力」から月ごとに登録します。</p><div class="row" style="margin:10px 0"><div><label for="baseStatus">基準残高の状態</label><select id="baseStatus"><option value="estimate">見込み（まだ月末になっていない・未照合）</option><option value="actual">実績（銀行残高と照合済み）</option></select></div><button type="button" id="useNovAnchor" class="secondary">基準日を本日に設定</button></div><p class="inlinehelp">基準日を変更する際は、既に反映済みの給与・カード・臨時収支を再加算しないようご注意ください。「11月末を基準に設定」では登録済みの給与・カード情報を消しません。</p><button id="saveSettings">設定を保存</button></div><div class="card"><h2>カードの引き落とし日</h2><p class="note">各カードの引落日を設定します。未入力月は計算上0円となり、予測が不完全であることを警告します。</p><div id="cardDays"></div><button id="saveDays" style="margin-top:12px">引落日を保存</button></div><div class="card"><h2>データのバックアップ</h2><p class="note">データはこのブラウザに保存されますが、ファイルを移動したりブラウザのデータを消したりすると引き継げない場合があります。旧版から移す場合は旧版の「JSONでバックアップ」から書き出して、こちらで読み込んでください。新規データは0円から始まります。iPhone版のJSONバックアップを読み込むか、正しい残高を設定してください。旧版のJSONを復元すると、その旧版に記録されていた基準日・残高が優先されます。違っていたら設定画面で変更してください。外部同期はありません。</p><div class="row"><button id="export">JSONでバックアップ</button><label style="margin:0"><span class="muted">バックアップを復元：</span><input type="file" id="import" accept=".json,application/json" style="max-width:250px"></label><button class="danger" id="reset">全データを初期化</button></div>
+<div class="restore-box" id="restoreBox"><strong>iPhoneでJSONを復元する</strong>
+<p class="section-note">「ファイルを選択」からiPhoneの「ファイル」アプリに保存した .json を選びます。選べない場合は、下の貼り付け欄からも復元できます。復元前に確認画面が表示されます。</p>
+<label for="importMobile">① バックアップJSONファイルを選択</label>
+<input class="restore-file" type="file" id="importMobile" accept=".json,application/json,text/plain,*/*">
+<div class="restore-status" id="restoreStatus" role="status">ファイル未選択</div>
+<details><summary>② ファイルを選べない場合：JSONを貼り付ける</summary>
+<label for="jsonPaste">バックアップのJSON全文</label><textarea id="jsonPaste" spellcheck="false" placeholder='{ "baseDate": "2026-11-25", ... }'></textarea>
+<button type="button" id="restorePaste" class="secondary">貼り付けたJSONを確認して復元</button>
+</details></div></div></section>
+<footer class="note">PWA試用版 0.2｜端末内保存・銀行連携なし。データは自動同期されません。定期的にJSONバックアップを保存してください。</footer>
 </main>
 <script>
 "use strict";
@@ -292,6 +308,25 @@ function renderSettings(){for(let id of ['baseDate','balance','salaryDay'])$(id)
 function renderAll(){renderDashboard();renderSavings();renderSalaries();renderCards();renderEvents();renderSettings()}
 function navigate(view){document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===view));for(let id of ['dashboard','salaries','savings','cards','events','shared','settings'])$(id).classList.toggle('hidden',id!==view)}
 document.querySelectorAll('[data-view]').forEach(btn=>btn.onclick=()=>navigate(btn.dataset.view));document.querySelectorAll('[data-goto]').forEach(btn=>btn.onclick=()=>navigate(btn.dataset.goto));
+// ページ本体の横スワイプ。グラフ、表、入力欄、ナビゲーション内の操作は除外する。
+const PAGES=['dashboard','salaries','savings','cards','events','shared','settings'];
+let swipeStart=null;
+const swipeIgnore='input,textarea,select,button,a,summary,[contenteditable],.chart-scroller,.tablewrap,.topnav,[data-no-page-swipe]';
+document.addEventListener('touchstart',e=>{
+ if(e.touches.length!==1||e.target.closest(swipeIgnore)){swipeStart=null;return;}
+ const t=e.touches[0];swipeStart={x:t.clientX,y:t.clientY,time:Date.now()};
+},{passive:true});
+document.addEventListener('touchend',e=>{
+ if(!swipeStart||e.changedTouches.length!==1)return;
+ const t=e.changedTouches[0],dx=t.clientX-swipeStart.x,dy=t.clientY-swipeStart.y;
+ swipeStart=null;
+ if(Math.abs(dx)<65||Math.abs(dx)<Math.abs(dy)*1.45)return;
+ const current=PAGES.findIndex(id=>!$(id).classList.contains('hidden'));
+ const next=Math.max(0,Math.min(PAGES.length-1,current+(dx<0?1:-1)));
+ if(next!==current){navigate(PAGES[next]);window.scrollTo({top:0,behavior:'instant'});}
+},{passive:true});
+document.addEventListener('touchcancel',()=>{swipeStart=null},{passive:true});
+
 $('chartOlder').onclick=()=>{$('chartScroll').scrollBy({left:-420,behavior:'smooth'})};
 $('chartLatest').onclick=()=>{$('chartScroll').scrollTo({left:$('chartScroll').scrollWidth,behavior:'smooth'})};
 let chartDrag=null,chartMoved=false;
@@ -337,7 +372,35 @@ $('saveSettings').onclick=()=>{if(!isDate($('baseDate').value)||!validDay(Number
 $('useNovAnchor').onclick=()=>{if(!confirm('計算の基準日を今日に変更しますか？ 残高は現在の値を維持します。'))return;state.baseDate=dateString(new Date());persist();renderAll();alert('基準日を今日に変更しました。正しい基準残高も合わせて確認してください。')};
 $('saveDays').onclick=()=>{let inputs=[...document.querySelectorAll('[data-day]')];if(inputs.some(i=>!validDay(Number(i.value)))){alert('引落日は1〜31で入力してください');return}for(let i of inputs)state.cards.find(c=>c.id===i.dataset.day).day=Number(i.value);persist();renderAll();alert('引落日を保存しました')};
 $('export').onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='mirai_balance_backup_'+dateString(today)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
-$('import').onchange=async e=>{let file=e.target.files[0];if(!file)return;try{let x=migrate(JSON.parse(await file.text()));if(!validState(x))throw Error('データ形式が正しくありません');if(confirm('現在のデータをバックアップ内容で置き換えますか？')){state=x;persist();renderAll()}}catch(err){alert('読み込みに失敗しました: '+err.message)}e.target.value=''};
+// Safariのホーム画面アプリでも使える、ファイル選択と貼り付けの2経路。
+function restoreJson(raw){
+ try{
+  const parsed=JSON.parse(raw),x=migrate(parsed);
+  if(!validState(x))throw Error('対応していないJSON形式、または項目に不正があります');
+  if(!confirm(`基準日 ${x.baseDate}、基準残高 ${yen(x.balance)} のデータで、現在の入力を上書きしますか？\n先に現在のデータをバックアップすることをおすすめします。`))return false;
+  const previous=state;
+  state=x;
+  if(!persist()){state=previous;throw Error('端末内のデータ保存に失敗しました')}
+  renderAll();$('restoreStatus').textContent='復元が完了しました。基準日と残高をご確認ください。';
+  alert('復元しました。設定画面で基準日・残高を確認してください。');return true;
+ }catch(err){$('restoreStatus').textContent='復元できませんでした：'+err.message;alert('JSONの読み込みに失敗しました：'+err.message);return false}
+}
+async function selectedJsonFile(e){
+ const file=e.target.files&&e.target.files[0];if(!file)return;
+ $('restoreStatus').textContent='選択：'+file.name;
+ try{
+  if(file.size>5*1024*1024)throw Error('ファイルが大きすぎます（最大5MB）');
+  const raw=typeof file.text==='function'?await file.text():await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result));reader.onerror=()=>reject(reader.error);reader.readAsText(file)});
+  restoreJson(raw);
+ }catch(err){$('restoreStatus').textContent='ファイルを読めませんでした：'+err.message;alert('ファイルを読み取れませんでした：'+err.message)}
+ e.target.value='';
+}
+$('import').addEventListener('change',selectedJsonFile);
+$('importMobile').addEventListener('change',selectedJsonFile);
+$('restorePaste').onclick=()=>{
+ const raw=$('jsonPaste').value.trim();if(!raw){alert('JSON全文を貼り付けてください');return}
+ if(restoreJson(raw))$('jsonPaste').value='';
+};
 $('reset').onclick=()=>{if(confirm('すべての入力データを初期化します。よろしいですか？')){state=defaults();persist();renderAll()}};
 initMoneyInputs();$('savingMonth').value=monthPlus(currentMonth,-1);$('salaryMonth').value=currentMonth;$('cardMonth').value=currentMonth;$('eventDate').value=dateString(today);renderAll();
 
