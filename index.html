@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ミライ残高 | PWA 0.4.1</title><meta name="theme-color" content="#124B42"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="ミライ残高"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png?v=041"><style>
+<title>ミライ残高 | PWA 0.4.2</title><meta name="theme-color" content="#124B42"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="ミライ残高"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png?v=042"><style>
 :root{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:#1b2935;background:#f3f6f8}*{box-sizing:border-box}body{margin:0}header{background:#133d3a;color:white;padding:20px max(20px,calc((100vw - 1080px)/2))}header h1{margin:0;font-size:24px}header small{color:#b9dbd2}main{max-width:1080px;margin:24px auto;padding:0 16px 50px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.card{background:white;border-radius:16px;padding:20px;box-shadow:0 2px 12px #18384a10;margin-bottom:16px}.card h2{font-size:17px;margin:0 0 14px}.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.row>*{min-width:0}label{font-size:13px;color:#52616c;display:block;margin:8px 0 4px}input,select{font:inherit;padding:10px;border:1px solid #ccd7dd;border-radius:9px;background:white;max-width:100%;width:100%}input[type=checkbox]{width:auto}button{font:inherit;border:0;background:#16695d;color:white;border-radius:9px;padding:10px 14px;cursor:pointer}button.secondary{background:#e5eeed;color:#22524b}button.danger{background:#fff0ef;color:#a33329}button:disabled{opacity:.5}.muted{color:#687781;font-size:12px}.hero{background:#133d3a;color:white}.hero .muted{color:#b6d7d0}.number{font-size:32px;font-weight:750;letter-spacing:-1px}.negative{color:#bd3434}.hero .negative{color:#ffc5c5}.smallnum{font-weight:700;font-size:20px}.stat{background:#f4f8f7;padding:12px;border-radius:12px}.form3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.form4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:13px;white-space:nowrap}th,td{text-align:left;padding:11px 8px;border-bottom:1px solid #e9eeee}th{color:#687781;background:#f7faf9}td.num{text-align:right;font-variant-numeric:tabular-nums}th.num{text-align:right}.pill{border-radius:100px;background:#fff3dc;color:#8b5900;font-size:11px;padding:3px 7px}.pill.ok{background:#e0f4e8;color:#246644}.warn{background:#fff5df;border-radius:10px;padding:12px;color:#805b16;font-size:13px}.bar{height:12px;background:#e6eeee;border-radius:10px;overflow:hidden}.bar>div{height:100%;background:#36a68b}.monthline{padding:10px 0;border-bottom:1px solid #eef1f2}.monthline button{padding:4px 9px;font-size:12px}.sectionhead{display:flex;justify-content:space-between;align-items:center;gap:10px}details{margin-top:12px}summary{cursor:pointer;color:#14675b;font-weight:600}.note{font-size:12px;color:#667681;line-height:1.7}.toggle{display:flex;gap:8px;align-items:center;font-size:13px}.topnav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}.topnav button{background:white;color:#275b53;border:1px solid #cbded9}.topnav button.active{background:#16695d;color:white}.hidden{display:none!important}@media(max-width:720px){.grid,.form3,.form4{grid-template-columns:1fr}.number{font-size:27px}.card{padding:15px}main{margin-top:16px}}
 
 .history-nav{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:12px 0}.history-nav button{font-size:13px}.actual{background:#e0f4e8;color:#246644}.monthline .actual-value{color:#16695d}.history-note{background:#edf7f4;padding:12px;border-radius:10px;color:#21574f;font-size:13px;line-height:1.6}.historical-value{color:#52616c}.period-label{font-weight:650}
@@ -324,6 +324,46 @@ header,main,section,.card,.form3,.form4,.btnrow,.managed-card,.managed-card .man
   }
 }
 
+
+/* v0.4.2: iOS native month field has an intrinsic width that exceeds the containing card.
+   Keep the real month value in an invisible input for unchanged saving/forecast logic;
+   expose an ordinary button and compact year/month dialog instead. */
+.month-chooser,.month-chooser *{box-sizing:border-box}
+#salaries .month-chooser,#savings .month-chooser,#cards .month-chooser{
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  grid-template-rows:52px 42px!important;gap:8px!important;width:100%!important;min-width:0!important;
+}
+#salaries .month-chooser input.month-source,#savings .month-chooser input.month-source,#cards .month-chooser input.month-source{
+  display:none!important;
+}
+#salaries .month-chooser .month-display,#savings .month-chooser .month-display,#cards .month-chooser .month-display{
+  grid-column:1/-1!important;grid-row:1!important;min-width:0!important;width:100%!important;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  height:52px;min-height:52px;background:#fff;border:1px solid #cfe0da;border-radius:12px;
+  color:#183a33;font-size:16px;font-weight:600;padding:0 15px;text-align:left;
+}
+.month-display span{font-size:15px;color:#598178}
+#salaries .month-chooser .month-step,#savings .month-chooser .month-step,#cards .month-chooser .month-step{
+  grid-row:2!important;min-width:0!important;width:100%!important;height:42px!important;
+  min-height:42px!important;flex:none!important;margin:0!important;align-self:stretch!important;
+}
+#salaries .month-chooser .month-step:first-child,#savings .month-chooser .month-step:first-child,#cards .month-chooser .month-step:first-child{grid-column:1!important}
+#salaries .month-chooser .month-step:last-child,#savings .month-chooser .month-step:last-child,#cards .month-chooser .month-step:last-child{grid-column:2!important}
+.month-picker-overlay{position:fixed;inset:0;z-index:1000;background:rgba(6,30,26,.45);display:flex;align-items:center;justify-content:center;padding:18px}
+.month-picker-panel{background:#fff;border-radius:20px;padding:22px;width:min(100%,350px);box-shadow:0 16px 48px #092d2530}
+.month-picker-panel h2{font-size:19px;margin:0 0 18px;color:#124b42}
+.month-picker-columns{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.month-picker-columns label{font-size:13px;font-weight:700;color:#426158}
+.month-picker-columns select{font-size:17px;min-height:50px;margin-top:7px}
+.month-picker-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:22px}
+.month-picker-actions button{min-height:48px}
+.managed-card{display:grid!important;grid-template-columns:48px minmax(0,1fr) minmax(0,1fr)!important;gap:10px!important;align-items:center!important}
+.managed-card .more-ico{grid-column:1;grid-row:1;min-width:0}
+.managed-card .managed-name{grid-column:2/4;grid-row:1;min-width:0}
+.managed-card button[data-editcard]{grid-column:2;grid-row:2}
+.managed-card button[data-removecard]{grid-column:3;grid-row:2}
+.managed-card button{min-width:0!important;min-height:44px!important;width:100%!important;padding:8px!important}
+@media(max-width:720px){#salaries .card,#savings .card,#cards .card{max-width:100%;overflow:hidden}}
 </style></head>
 <script>
 // Safari's home-screen runtime may report zero safe-area insets.
@@ -335,7 +375,17 @@ header,main,section,.card,.form3,.form4,.btnrow,.managed-card,.managed-card .man
 </script>
 <body>
 <div id="uiToast" role="status" aria-live="polite" aria-atomic="true"></div>
-<header><div class="brand"><img src="./icon-192.png?v=041" alt=""/><div><strong>ミライ残高</strong><small>残高の未来を、もっと見やすく</small></div></div></header>
+<div id="monthPickerOverlay" class="month-picker-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="monthPickerTitle">
+  <div class="month-picker-panel">
+    <h2 id="monthPickerTitle">年月を選択</h2>
+    <div class="month-picker-columns">
+      <label>年<select id="pickYear"></select></label>
+      <label>月<select id="pickMonth"></select></label>
+    </div>
+    <div class="month-picker-actions"><button type="button" id="cancelMonthPicker" class="secondary">キャンセル</button><button type="button" id="confirmMonthPicker">決定</button></div>
+  </div>
+</div>
+<header><div class="brand"><img src="./icon-192.png?v=042" alt=""/><div><strong>ミライ残高</strong><small>残高の未来を、もっと見やすく</small></div></div></header>
 <main>
 <div class="calc-guidance hidden" role="note"><strong>金額欄は電卓式で入力できます。</strong> 例：<code>50000+12000</code>、<code>(80000-10000)/2</code>、<code>3000*2</code>。入力中に計算結果を表示し、保存時は金額のみ記録します（1円未満は四捨五入）。</div>
 <nav class="topnav" aria-label="画面切り替え">
@@ -352,7 +402,7 @@ header,main,section,.card,.form3,.form4,.btnrow,.managed-card,.managed-card .man
 <button type="button" data-goto="shared"><span class="more-ico">⇄</span><span><b>共通口座</b><small>Olive・振替の設定</small></span><span class="chevron">›</span></button>
 <button type="button" data-goto="settings"><span class="more-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="2.5" fill="#e8f4ef"/><circle cx="16" cy="17" r="2.5" fill="#e8f4ef"/></svg></span><span><b>設定</b><small>基準残高・給料日・カード支払日</small></span><span class="chevron">›</span></button>
 <button type="button" data-goto="data"><span class="more-ico">⇩</span><span><b>データ管理</b><small>JSONバックアップ・復元</small></span><span class="chevron">›</span></button>
-</div><p class="more-footer">PWA Ver.0.4.1 ・ オフライン対応</p>
+</div><p class="more-footer">PWA Ver.0.4.2 ・ オフライン対応</p>
 </section>
 <div id="subviewBar" class="hidden"><button id="backToMore" type="button">‹ その他に戻る</button><strong id="subviewLabel"></strong></div>
 <section id="dashboard"><div class="view-heading"><h2>残高予測</h2><p>これからの口座残高をひと目で確認</p></div>
@@ -376,10 +426,10 @@ header,main,section,.card,.form3,.form4,.btnrow,.managed-card,.managed-card .man
 <div class="form3"><div><label for="sharedBalance">開始日時点の共通口座残高（円・任意）</label><input type="text" id="sharedBalance" placeholder="未設定のままでも可" inputmode="decimal" autocomplete="off" data-money="sharedBalance"></div><div><label for="transferLead">振替を想定する日</label><select id="transferLead"><option value="0">Olive引落当日</option><option value="1">引落前日（仮）</option><option value="3">引落3日前（仮）</option><option value="7">引落7日前（仮）</option></select></div><div style="align-self:end"><button id="saveSharedSettings">共通口座の設定を保存</button></div></div><p class="inlinehelp compact-description">共通口座残高は、Oliveの請求総額と妻の入金額が分かる月のみ計算できます。本人負担額だけ入力した場合、メイン口座の残高計算には反映しますが、共通口座全体の残高は未算出にします。実際の振替日が異なればその日の資金繰りも変わります。</p></div>
 <div class="card"><h2>月別のOlive精算</h2><p class="section-note compact-description">従来どおり折半後の本人負担額だけ入力しても使えます。妻の負担まで算出したい月に限り、入力方式を「カード請求総額」に変更し、ahamo分などの内訳を登録してください。</p><div class="tablewrap"><table><thead><tr><th>引落月</th><th class="num">Olive登録額</th><th class="num">本人負担</th><th class="num">妻負担</th><th>内訳</th></tr></thead><tbody id="sharedRows"></tbody></table></div></div>
 <div class="card"><div class="sectionhead"><h2>共通口座の入出金</h2><select id="sharedMonth" aria-label="共通口座の明細月" style="width:165px"></select></div><div class="tablewrap"><table><thead><tr><th>日付</th><th>内容</th><th class="num">増減</th><th class="num">残高</th></tr></thead><tbody id="sharedTimeline"></tbody></table></div><p class="inlinehelp compact-description">※請求総額が登録されていない月の共通口座残高は未算出です。妻の入金は総額入力モードの場合のみ計算します。</p></div></section>
-<section id="savings" class="hidden"><div class="view-heading"><h2>貯金履歴</h2><p>月ごとの実績を見直す</p></div><div class="card"><h2>月末の貯金残高を記録</h2><p class="section-note compact-description">過去の月末残高を実績として登録できます。実績値は過去の逆算の基準になり、後続の予測にも反映します。未来の「見込み」はメモとして保存しますが、入出金からの予測残高を上書きしません。共通口座を含めないメイン口座の金額を入力してください。</p><div class="form3"><div><label for="savingMonth">対象月</label><div class="month-chooser" data-month-chooser="savingMonth"><button type="button" class="month-step" data-month-step="-1" aria-label="前の月">‹</button><input type="month" id="savingMonth" aria-label="年月を選択"><button type="button" class="month-step" data-month-step="1" aria-label="次の月">›</button></div></div><div><label for="savingAmount">月末の貯金残高（円）</label><input type="text" id="savingAmount" placeholder="例: 102288" inputmode="decimal" autocomplete="off" data-money="savingAmount"></div><div><label for="savingStatus">区分</label><select id="savingStatus"><option value="actual">実績（確定）</option><option value="estimate">見込み（手入力）</option></select></div></div><div class="btnrow" style="margin-top:14px"><button id="saveSaving">この月の貯金残高を保存</button><span class="muted">同じ月は上書き保存します</span></div><div class="history-note" style="margin-top:14px">確定した月末実績は「基準点」として使用します。過去の未記録期間は実績ではなく「参考推計」と表示し、記録が全くない区間を実際の貯金実績として見せません。未来の見込みは参考メモで、予測計算を上書きしません。</div></div><div class="card"><h2>登録した貯金残高の履歴</h2><div class="tablewrap"><table><thead><tr><th>対象月</th><th>区分</th><th class="num">月末貯金額</th><th>操作</th></tr></thead><tbody id="savingRows"></tbody></table></div></div></section>
+<section id="savings" class="hidden"><div class="view-heading"><h2>貯金履歴</h2><p>月ごとの実績を見直す</p></div><div class="card"><h2>月末の貯金残高を記録</h2><p class="section-note compact-description">過去の月末残高を実績として登録できます。実績値は過去の逆算の基準になり、後続の予測にも反映します。未来の「見込み」はメモとして保存しますが、入出金からの予測残高を上書きしません。共通口座を含めないメイン口座の金額を入力してください。</p><div class="form3"><div><label for="savingMonthButton">対象月</label><div class="month-chooser" data-month-chooser="savingMonth"><button type="button" class="month-step" data-month-step="-1" aria-label="前の月">‹</button><input type="month" id="savingMonth" class="month-source" aria-hidden="true" tabindex="-1"><button type="button" class="month-display" id="savingMonthButton" data-pick-month="savingMonth" aria-label="年月を選択">年月を選択 <span aria-hidden="true">▾</span></button><button type="button" class="month-step" data-month-step="1" aria-label="次の月">›</button></div></div><div><label for="savingAmount">月末の貯金残高（円）</label><input type="text" id="savingAmount" placeholder="例: 102288" inputmode="decimal" autocomplete="off" data-money="savingAmount"></div><div><label for="savingStatus">区分</label><select id="savingStatus"><option value="actual">実績（確定）</option><option value="estimate">見込み（手入力）</option></select></div></div><div class="btnrow" style="margin-top:14px"><button id="saveSaving">この月の貯金残高を保存</button><span class="muted">同じ月は上書き保存します</span></div><div class="history-note" style="margin-top:14px">確定した月末実績は「基準点」として使用します。過去の未記録期間は実績ではなく「参考推計」と表示し、記録が全くない区間を実際の貯金実績として見せません。未来の見込みは参考メモで、予測計算を上書きしません。</div></div><div class="card"><h2>登録した貯金残高の履歴</h2><div class="tablewrap"><table><thead><tr><th>対象月</th><th>区分</th><th class="num">月末貯金額</th><th>操作</th></tr></thead><tbody id="savingRows"></tbody></table></div></div></section>
 <section id="salaries" class="hidden"><div class="view-heading"><h2>月別入力</h2><p>確定した給与を記録し、未来の残高に反映</p></div>
 <div class="card"><h2>毎月の手取り給与を登録</h2><p class="section-note compact-description">給与が分かった月だけ入力します。未来の未入力月は、<b>過去に支給済みの確定給与の平均</b>で自動予測。ボーナスは「臨時入出金」に登録してください。</p>
-<div class="form3"><div><label for="salaryMonth">給与の支給月</label><div class="month-chooser" data-month-chooser="salaryMonth"><button type="button" class="month-step" data-month-step="-1" aria-label="前の月">‹</button><input type="month" id="salaryMonth" aria-label="年月を選択"><button type="button" class="month-step" data-month-step="1" aria-label="次の月">›</button></div></div><div><label for="salaryAmount">手取り金額（円）</label><input type="text" id="salaryAmount" placeholder="例: 254000" inputmode="decimal" autocomplete="off" data-money="salaryAmount"></div><div><label for="salaryStatus">金額の状態</label><select id="salaryStatus"><option value="confirmed">確定（実績）</option><option value="estimated">未確定（手入力の見込み）</option></select></div></div>
+<div class="form3"><div><label for="salaryMonthButton">給与の支給月</label><div class="month-chooser" data-month-chooser="salaryMonth"><button type="button" class="month-step" data-month-step="-1" aria-label="前の月">‹</button><input type="month" id="salaryMonth" class="month-source" aria-hidden="true" tabindex="-1"><button type="button" class="month-display" id="salaryMonthButton" data-pick-month="salaryMonth" aria-label="年月を選択">年月を選択 <span aria-hidden="true">▾</span></button><button type="button" class="month-step" data-month-step="1" aria-label="次の月">›</button></div></div><div><label for="salaryAmount">手取り金額（円）</label><input type="text" id="salaryAmount" placeholder="例: 254000" inputmode="decimal" autocomplete="off" data-money="salaryAmount"></div><div><label for="salaryStatus">金額の状態</label><select id="salaryStatus"><option value="confirmed">確定（実績）</option><option value="estimated">未確定（手入力の見込み）</option></select></div></div>
 <div class="btnrow" style="margin-top:14px"><button id="saveSalary">この月の給与を保存</button><span class="muted">同じ月を再保存すると上書きします</span></div>
 </div>
 <div class="card"><h2>未来の給与の予測方法</h2><label for="averageWindow">平均に使う過去の確定給与</label><select id="averageWindow" class="compact"><option value="3">直近3件</option><option value="6">直近6件</option><option value="all">全件</option></select><p class="inlinehelp compact-description">平均の対象は計算開始日までに給料日が過ぎている「確定」登録だけです。登録が1〜2件ならその件数で平均し、0件なら予測給与を計算に入れず「未入力」と警告します。</p><div id="salaryAvgDetail" class="callout"></div></div>
@@ -392,7 +442,7 @@ header,main,section,.card,.form3,.form4,.btnrow,.managed-card,.managed-card .man
 <label for="cardManageName">カード名</label><input id="cardManageName" maxlength="40" placeholder="例: 新しいカード" autocomplete="off">
 <label for="cardIssuer">カード会社（引落日候補の参考）</label><select id="cardIssuer"><option value="other">その他</option><option value="smbc">三井住友カード</option><option value="olive">Olive</option><option value="amex">American Express</option><option value="eneos">ENEOS</option><option value="paypay">PayPayカード</option></select>
 <label for="cardManageDay">毎月の引落日（1〜31）</label><input id="cardManageDay" type="number" min="1" max="31" value="26">
-<div class="btnrow" style="margin-top:14px"><button type="button" id="saveManagedCard">保存</button><button type="button" id="cancelManagedCard" class="secondary">キャンセル</button></div></div></div><div class="card"><h2>カード請求額の登録</h2><p class="note">引落日が土日・祝日・銀行休業日に当たる場合、翌銀行営業日に調整します（2026・2027年の祝日を収録）。カード一覧に実際の計算日を表示します。</p><p class="note">現時点の請求予定額を入力し、確定後に上書きできます。Oliveは折半後の本人負担額をそのまま入力する方式が標準です。未入力と0円は区別します。</p><div class="form4"><div><label>対象月（引落月）</label><div class="month-chooser" data-month-chooser="cardMonth"><button type="button" class="month-step" data-month-step="-1" aria-label="前の月">‹</button><input type="month" id="cardMonth" aria-label="年月を選択"><button type="button" class="month-step" data-month-step="1" aria-label="次の月">›</button></div></div><div><label>カード</label><select id="cardName"></select></div><div><label for="cardAmount" id="cardAmountLabel">請求予定額（円）</label><input type="text" id="cardAmount" placeholder="例: 70000" inputmode="decimal" autocomplete="off" data-money="cardAmount"></div><div><label>状態</label><select id="cardStatus"><option value="estimated">未確定</option><option value="confirmed">確定</option></select></div></div><div id="oliveBreakdown" class="callout" style="margin-top:12px"><strong>Oliveの金額の入力方式</strong><label for="oliveAmountMode">この欄に入力した金額は？</label><select id="oliveAmountMode"><option value="personal">すでに折半した本人負担額（推奨・従来どおり）</option><option value="total">共通カードの請求総額（内訳から負担額を計算）</option></select><p class="inlinehelp" id="oliveModeHelp"></p><div id="oliveBreakdownInputs"><div class="form3"><div><label for="oliveAhamo">ahamo：本人が全額負担（円）</label><input id="oliveAhamo" type="text" placeholder="未入力＝未配分" inputmode="decimal" autocomplete="off" data-money="oliveAhamo"></div><div><label for="oliveWife">妻が全額負担する額（円）</label><input id="oliveWife" type="text" value="0" inputmode="decimal" autocomplete="off" data-money="oliveWife"></div><div><label>折半対象額</label><div class="smallnum" id="oliveSharedAmount">—</div></div></div><p class="inlinehelp compact-description">ドコモ光などは折半対象に含めます。ahamo以外に個人負担があればそれぞれの欄へ入力してください。残額を半分ずつ負担します。</p></div></div>
+<div class="btnrow" style="margin-top:14px"><button type="button" id="saveManagedCard">保存</button><button type="button" id="cancelManagedCard" class="secondary">キャンセル</button></div></div></div><div class="card"><h2>カード請求額の登録</h2><p class="note">引落日が土日・祝日・銀行休業日に当たる場合、翌銀行営業日に調整します（2026・2027年の祝日を収録）。カード一覧に実際の計算日を表示します。</p><p class="note">現時点の請求予定額を入力し、確定後に上書きできます。Oliveは折半後の本人負担額をそのまま入力する方式が標準です。未入力と0円は区別します。</p><div class="form4"><div><label>対象月（引落月）</label><div class="month-chooser" data-month-chooser="cardMonth"><button type="button" class="month-step" data-month-step="-1" aria-label="前の月">‹</button><input type="month" id="cardMonth" class="month-source" aria-hidden="true" tabindex="-1"><button type="button" class="month-display" id="cardMonthButton" data-pick-month="cardMonth" aria-label="年月を選択">年月を選択 <span aria-hidden="true">▾</span></button><button type="button" class="month-step" data-month-step="1" aria-label="次の月">›</button></div></div><div><label>カード</label><select id="cardName"></select></div><div><label for="cardAmount" id="cardAmountLabel">請求予定額（円）</label><input type="text" id="cardAmount" placeholder="例: 70000" inputmode="decimal" autocomplete="off" data-money="cardAmount"></div><div><label>状態</label><select id="cardStatus"><option value="estimated">未確定</option><option value="confirmed">確定</option></select></div></div><div id="oliveBreakdown" class="callout" style="margin-top:12px"><strong>Oliveの金額の入力方式</strong><label for="oliveAmountMode">この欄に入力した金額は？</label><select id="oliveAmountMode"><option value="personal">すでに折半した本人負担額（推奨・従来どおり）</option><option value="total">共通カードの請求総額（内訳から負担額を計算）</option></select><p class="inlinehelp" id="oliveModeHelp"></p><div id="oliveBreakdownInputs"><div class="form3"><div><label for="oliveAhamo">ahamo：本人が全額負担（円）</label><input id="oliveAhamo" type="text" placeholder="未入力＝未配分" inputmode="decimal" autocomplete="off" data-money="oliveAhamo"></div><div><label for="oliveWife">妻が全額負担する額（円）</label><input id="oliveWife" type="text" value="0" inputmode="decimal" autocomplete="off" data-money="oliveWife"></div><div><label>折半対象額</label><div class="smallnum" id="oliveSharedAmount">—</div></div></div><p class="inlinehelp compact-description">ドコモ光などは折半対象に含めます。ahamo以外に個人負担があればそれぞれの欄へ入力してください。残額を半分ずつ負担します。</p></div></div>
 <div class="btnrow" style="margin-top:12px"><button id="saveCard">この月の請求額を保存</button><span class="muted">同じ月・カードを再保存すると上書き</span></div></div><div class="card"><h2>登録済みのカード請求</h2><div class="tablewrap"><table><thead><tr><th>引落月</th><th>カード</th><th>引落日</th><th>状態</th><th class="num">請求額</th><th>個人負担</th><th></th></tr></thead><tbody id="cardRows"></tbody></table></div></div></section>
 <section id="events" class="hidden"><div class="card"><h2>臨時の入出金を追加</h2><p class="note">ボーナス、指輪代金、旅行費などはこちら。給与の平均にボーナスは含まれません。</p><div class="form4"><div><label>日付</label><div class="date-chooser"><input type="date" id="eventDate"><button type="button" class="secondary open-date" data-open-date="eventDate" aria-label="日付をカレンダーから選択">カレンダー</button></div></div><div><label>内容</label><input id="eventTitle" placeholder="例: ボーナス、旅行、指輪"></div><div><label>金額（円）</label><input type="text" id="eventAmount" inputmode="decimal" autocomplete="off" data-money="eventAmount"></div><div><label>種類</label><select id="eventKind"><option value="expense">支出</option><option value="income">収入</option></select></div></div><button id="addEvent" style="margin-top:12px">予定を追加</button></div><div class="card"><h2>登録済みの臨時入出金</h2><div class="tablewrap"><table><thead><tr><th>日付</th><th>内容</th><th>種類</th><th class="num">金額</th><th></th></tr></thead><tbody id="eventRows"></tbody></table></div></div></section>
 <section id="settings" class="hidden"><div class="card"><h2>残高・給料日の設定</h2><div class="form3"><div><label>残高の基準日</label><div class="date-chooser"><input type="date" id="baseDate"><button type="button" class="secondary open-date" data-open-date="baseDate" aria-label="基準日をカレンダーから選択">カレンダー</button></div></div><div><label>基準日時点の残高（円）</label><input type="text" id="balance" inputmode="decimal" autocomplete="off" data-money="balance"></div><div><label>給料日（1〜31）</label><input type="number" min="1" max="31" id="salaryDay"></div></div><p class="note">基準日の残高は、その日までの給与・引き落としを反映した金額を設定してください。過去の履歴は参考推計です。</p><p class="note">開始残高には計算開始日までの入出金が反映済みとします。同日の入出金は二重計上防止のため除外します。31日など存在しない日は月末に調整します。給与は「給与入力」から月ごとに登録します。</p><div class="row" style="margin:10px 0"><div><label for="baseStatus">基準残高の状態</label><select id="baseStatus"><option value="estimate">見込み（まだ月末になっていない・未照合）</option><option value="actual">実績（銀行残高と照合済み）</option></select></div><button type="button" id="useNovAnchor" class="secondary">基準日を本日に設定</button></div><p class="inlinehelp compact-description">基準日を変更する際は、既に反映済みの給与・カード・臨時収支を再加算しないようご注意ください。「11月末を基準に設定」では登録済みの給与・カード情報を消しません。</p><button id="saveSettings">設定を保存</button></div><div class="card"><h2>カードの引き落とし日</h2><p class="note">各カードの引落日を設定します。未入力月は計算上0円となり、予測が不完全であることを警告します。</p><div id="cardDays"></div><button id="saveDays" style="margin-top:12px">引落日を保存</button></div><div class="card"><h2>データのバックアップ</h2><p class="note">データはこのブラウザに保存されますが、ファイルを移動したりブラウザのデータを消したりすると引き継げない場合があります。旧版から移す場合は旧版の「JSONでバックアップ」から書き出して、こちらで読み込んでください。新規データは0円から始まります。iPhone版のJSONバックアップを読み込むか、正しい残高を設定してください。旧版のJSONを復元すると、その旧版に記録されていた基準日・残高が優先されます。違っていたら設定画面で変更してください。外部同期はありません。</p><div class="row"><button id="export">JSONでバックアップ</button><label style="margin:0"><span class="muted">バックアップを復元：</span><input type="file" id="import" accept=".json,application/json" style="max-width:250px"></label><button class="danger" id="reset">全データを初期化</button></div>
@@ -405,7 +455,7 @@ header,main,section,.card,.form3,.form4,.btnrow,.managed-card,.managed-card .man
 <label for="jsonPaste">バックアップのJSON全文</label><textarea id="jsonPaste" spellcheck="false" placeholder='{ "baseDate": "2026-11-25", ... }'></textarea>
 <button type="button" id="restorePaste" class="secondary">貼り付けたJSONを確認して復元</button>
 </details></div></div></section>
-<footer class="note">PWA Ver.0.4.0｜端末内保存・銀行連携なし。データは自動同期されません。定期的にJSONバックアップを保存してください。</footer>
+<footer class="note">PWA Ver.0.4.2｜端末内保存・銀行連携なし。データは自動同期されません。定期的にJSONバックアップを保存してください。</footer>
 </main>
 <script>
 "use strict";
@@ -708,7 +758,7 @@ function renderCards(){renderManagedCards();const month=$('cardMonth').value||cu
 }
 function renderEvents(){$('eventRows').innerHTML=[...state.events].sort((a,b)=>a.date.localeCompare(b.date)).map(e=>`<tr><td>${esc(e.date)}</td><td>${esc(e.title)}</td><td>${e.type==='income'?'入金':'出金'}</td><td class="num">${yen(e.amount)}</td><td><button class="danger" data-delevent="${esc(e.id)}">削除</button></td></tr>`).join('')||'<tr><td colspan="5">臨時入出金はありません。</td></tr>'}
 function renderSettings(){for(let id of ['baseDate','balance','salaryDay'])$(id).value=state[id];$('baseStatus').value=state.baseStatus;$('cardDays').innerHTML=state.cards.map(c=>`<div class="row" style="margin:8px 0"><span style="min-width:100px">${esc(c.name)}</span><input style="width:110px" type="number" min="1" max="31" data-day="${esc(c.id)}" value="${c.day}"><span class="muted">日（初期値は仮設定）</span></div>`).join('')}
-function renderAll(){renderDashboard();renderSavings();renderSalaries();renderCards();renderEvents();renderSettings()}
+function renderAll(){renderDashboard();renderSavings();renderSalaries();renderCards();renderEvents();renderSettings();syncMonthButtons()}
 let toastTimer=null;
 function showSavedToast(message){
  const toast=document.getElementById('uiToast');
@@ -801,15 +851,53 @@ document.addEventListener('touchend',e=>{
 },{passive:true});
 document.addEventListener('touchcancel',()=>{releaseSwipePreview();swipeStart=null},{passive:true});
 
-// 月の前後移動はHTMLのmonth入力を残したまま行う。元の保存形式は変えない。
+// v0.4.2: Safari/PWA-safe month UI, preserving original state value and change events.
+function syncMonthButtons(){
+  document.querySelectorAll('[data-month-chooser]').forEach(group=>{
+    const source=group.querySelector('input[type="month"]');
+    const button=group.querySelector('[data-pick-month]');
+    if(!source||!button)return;
+    const valid=/^\d{4}-(0[1-9]|1[0-2])$/.test(source.value);
+    const value=valid?source.value:currentMonth;
+    const [year,month]=value.split('-');
+    button.firstChild.textContent=`${year}年${Number(month)}月 `;
+  });
+}
+let activeMonthSource=null;
+const pickerOverlay=$('monthPickerOverlay');
+const pickerYear=$('pickYear'),pickerMonth=$('pickMonth');
+const thisYear=new Date().getFullYear();
+for(let y=2020;y<=Math.max(2040,thisYear+15);y++)pickerYear.add(new Option(`${y}年`,String(y)));
+for(let m=1;m<=12;m++)pickerMonth.add(new Option(`${m}月`,String(m)));
+function closeMonthPicker(){pickerOverlay.classList.add('hidden');activeMonthSource=null;}
 document.querySelectorAll('[data-month-chooser]').forEach(group=>{
-  const input=group.querySelector('input[type="month"]');
-  group.querySelectorAll('[data-month-step]').forEach(button=>button.addEventListener('click',()=>{
-    const base=isMonth(input.value)?input.value:currentMonth;
-    input.value=monthPlus(base,Number(button.dataset.monthStep));
-    input.dispatchEvent(new Event('change',{bubbles:true}));
+  const source=group.querySelector('input[type="month"]');
+  const button=group.querySelector('[data-pick-month]');
+  group.querySelectorAll('[data-month-step]').forEach(step=>step.addEventListener('click',()=>{
+    const base=isMonth(source.value)?source.value:currentMonth;
+    source.value=monthPlus(base,Number(step.dataset.monthStep));
+    source.dispatchEvent(new Event('change',{bubbles:true}));
+    syncMonthButtons();
   }));
+  button.addEventListener('click',()=>{
+    activeMonthSource=source;
+    const base=isMonth(source.value)?source.value:currentMonth;
+    const [y,m]=base.split('-');pickerYear.value=y;pickerMonth.value=String(Number(m));
+    pickerOverlay.classList.remove('hidden');pickerYear.focus();
+  });
+  source.addEventListener('change',syncMonthButtons);
 });
+$('cancelMonthPicker').addEventListener('click',closeMonthPicker);
+$('confirmMonthPicker').addEventListener('click',()=>{
+  if(!activeMonthSource)return;
+  activeMonthSource.value=`${pickerYear.value}-${String(pickerMonth.value).padStart(2,'0')}`;
+  activeMonthSource.dispatchEvent(new Event('change',{bubbles:true}));
+  closeMonthPicker();syncMonthButtons();
+});
+pickerOverlay.addEventListener('click',e=>{if(e.target===pickerOverlay)closeMonthPicker()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!pickerOverlay.classList.contains('hidden'))closeMonthPicker()});
+// Editing old entries sets the value programmatically: refresh visible month labels afterwards.
+document.addEventListener('click',()=>requestAnimationFrame(syncMonthButtons),true);
 function selectChartRelative(direction){
  const at=chartPoints.findIndex(p=>p.month===selectedChartMonth);
  if(at<0)return;
