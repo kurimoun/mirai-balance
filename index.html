@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ミライ残高 | PWA 0.4.5</title><meta name="theme-color" content="#124B42"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="ミライ残高"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png?v=045"><style>
+<title>ミライ残高 | PWA 0.4.6</title><meta name="theme-color" content="#124B42"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="ミライ残高"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png?v=046"><style>
 :root{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:#1b2935;background:#f3f6f8}*{box-sizing:border-box}body{margin:0}header{background:#133d3a;color:white;padding:20px max(20px,calc((100vw - 1080px)/2))}header h1{margin:0;font-size:24px}header small{color:#b9dbd2}main{max-width:1080px;margin:24px auto;padding:0 16px 50px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.card{background:white;border-radius:16px;padding:20px;box-shadow:0 2px 12px #18384a10;margin-bottom:16px}.card h2{font-size:17px;margin:0 0 14px}.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.row>*{min-width:0}label{font-size:13px;color:#52616c;display:block;margin:8px 0 4px}input,select{font:inherit;padding:10px;border:1px solid #ccd7dd;border-radius:9px;background:white;max-width:100%;width:100%}input[type=checkbox]{width:auto}button{font:inherit;border:0;background:#16695d;color:white;border-radius:9px;padding:10px 14px;cursor:pointer}button.secondary{background:#e5eeed;color:#22524b}button.danger{background:#fff0ef;color:#a33329}button:disabled{opacity:.5}.muted{color:#687781;font-size:12px}.hero{background:#133d3a;color:white}.hero .muted{color:#b6d7d0}.number{font-size:32px;font-weight:750;letter-spacing:-1px}.negative{color:#bd3434}.hero .negative{color:#ffc5c5}.smallnum{font-weight:700;font-size:20px}.stat{background:#f4f8f7;padding:12px;border-radius:12px}.form3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.form4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:13px;white-space:nowrap}th,td{text-align:left;padding:11px 8px;border-bottom:1px solid #e9eeee}th{color:#687781;background:#f7faf9}td.num{text-align:right;font-variant-numeric:tabular-nums}th.num{text-align:right}.pill{border-radius:100px;background:#fff3dc;color:#8b5900;font-size:11px;padding:3px 7px}.pill.ok{background:#e0f4e8;color:#246644}.warn{background:#fff5df;border-radius:10px;padding:12px;color:#805b16;font-size:13px}.bar{height:12px;background:#e6eeee;border-radius:10px;overflow:hidden}.bar>div{height:100%;background:#36a68b}.monthline{padding:10px 0;border-bottom:1px solid #eef1f2}.monthline button{padding:4px 9px;font-size:12px}.sectionhead{display:flex;justify-content:space-between;align-items:center;gap:10px}details{margin-top:12px}summary{cursor:pointer;color:#14675b;font-weight:600}.note{font-size:12px;color:#667681;line-height:1.7}.toggle{display:flex;gap:8px;align-items:center;font-size:13px}.topnav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}.topnav button{background:white;color:#275b53;border:1px solid #cbded9}.topnav button.active{background:#16695d;color:white}.hidden{display:none!important}@media(max-width:720px){.grid,.form3,.form4{grid-template-columns:1fr}.number{font-size:27px}.card{padding:15px}main{margin-top:16px}}
 
 .history-nav{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:12px 0}.history-nav button{font-size:13px}.actual{background:#e0f4e8;color:#246644}.monthline .actual-value{color:#16695d}.history-note{background:#edf7f4;padding:12px;border-radius:10px;color:#21574f;font-size:13px;line-height:1.6}.historical-value{color:#52616c}.period-label{font-weight:650}
@@ -400,6 +400,8 @@ header,main,section,.card,.form3,.form4,.btnrow,.managed-card,.managed-card .man
 #cards .managed-card{row-gap:7px}
 @media(max-width:720px){#dashboard .graph-card .chart-jump{margin-bottom:10px}}
 @media(prefers-reduced-motion:reduce){.entry-notes summary{scroll-behavior:auto}}
+/* 0.4.6: distinct zero-line and readable fixed-axis tick labels. */
+#dashboard .chart-axis{width:54px;background:linear-gradient(90deg,#fff 0%,#fff 90%,rgba(255,255,255,.85) 100%)}
 </style></head>
 <script>
 // Safari's home-screen runtime may report zero safe-area insets.
@@ -421,7 +423,7 @@ header,main,section,.card,.form3,.form4,.btnrow,.managed-card,.managed-card .man
     <div class="month-picker-actions"><button type="button" id="cancelMonthPicker" class="secondary">キャンセル</button><button type="button" id="confirmMonthPicker">決定</button></div>
   </div>
 </div>
-<header><div class="brand"><img src="./icon-192.png?v=045" alt=""/><div><strong>ミライ残高</strong><small>残高の未来を、もっと見やすく</small></div></div></header>
+<header><div class="brand"><img src="./icon-192.png?v=046" alt=""/><div><strong>ミライ残高</strong><small>残高の未来を、もっと見やすく</small></div></div></header>
 <main>
 <div class="calc-guidance hidden" role="note"><strong>金額欄は電卓式で入力できます。</strong> 例：<code>50000+12000</code>、<code>(80000-10000)/2</code>、<code>3000*2</code>。入力中に計算結果を表示し、保存時は金額のみ記録します（1円未満は四捨五入）。</div>
 <nav class="topnav" aria-label="画面切り替え">
@@ -438,7 +440,7 @@ header,main,section,.card,.form3,.form4,.btnrow,.managed-card,.managed-card .man
 
 <button type="button" data-goto="settings"><span class="more-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="2.5" fill="#e8f4ef"/><circle cx="16" cy="17" r="2.5" fill="#e8f4ef"/></svg></span><span><b>設定</b><small>基準残高・給料日・カード支払日</small></span><span class="chevron">›</span></button>
 <button type="button" data-goto="data"><span class="more-ico">⇩</span><span><b>データ管理</b><small>JSONバックアップ・復元</small></span><span class="chevron">›</span></button>
-</div><p class="more-footer">PWA Ver.0.4.5 ・ オフライン対応</p>
+</div><p class="more-footer">PWA Ver.0.4.6 ・ オフライン対応</p>
 </section>
 <div id="subviewBar" class="hidden"><button id="backToMore" type="button">‹ その他に戻る</button><strong id="subviewLabel"></strong></div>
 <section id="dashboard"><div class="view-heading"><h2>残高予測</h2><p>これからの口座残高をひと目で確認</p></div>
@@ -491,7 +493,7 @@ header,main,section,.card,.form3,.form4,.btnrow,.managed-card,.managed-card .man
 <label for="jsonPaste">バックアップのJSON全文</label><textarea id="jsonPaste" spellcheck="false" placeholder='{ "baseDate": "2026-11-25", ... }'></textarea>
 <button type="button" id="restorePaste" class="secondary">貼り付けたJSONを確認して復元</button>
 </details></div></div></section>
-<footer class="note">PWA Ver.0.4.5｜端末内保存・銀行連携なし。データは自動同期されません。定期的にJSONバックアップを保存してください。</footer>
+<footer class="note">PWA Ver.0.4.6｜端末内保存・銀行連携なし。データは自動同期されません。定期的にJSONバックアップを保存してください。</footer>
 </main>
 <script>
 "use strict";
@@ -743,13 +745,36 @@ function playChartReveal(){
   }
   chartRevealFrame=requestAnimationFrame(frame);
 }
+function balanceChartScale(values){
+  const finite=values.filter(Number.isFinite);
+  const low=Math.min(0,...finite),high=Math.max(0,...finite,10000);
+  const rough=(high-low)/4;
+  const power=Math.pow(10,Math.floor(Math.log10(Math.max(1,rough))));
+  const step=[1,2,5,10].map(x=>x*power).find(x=>x>=rough)||power*10;
+  return {min:Math.floor(low/step)*step,max:Math.ceil(high/step)*step,step};
+}
+function formatBalanceAxis(yenAmount){
+  if(Math.abs(yenAmount)<.5)return '0円';
+  const man=yenAmount/10000;
+  return Number.isInteger(man)?`${man}万`:`${+man.toFixed(1)}万`;
+}
 function renderLineChart(r){const scroller=$('chartScroll'),oldScroll=scroller.scrollLeft,wasAtEnd=scroller.scrollWidth-scroller.clientWidth-oldScroll<65;
 const firstSaved=Object.keys(state.savings).filter(isMonth).sort()[0];const earliest=monthPlus(currentMonth,-12),first=r.months[0]?.month||earliest,last=r.months.at(-1)?.month||monthPlus(currentMonth,1);
 const count=Math.min(240,Math.max(0,monthDistance(first,last)+1));const byMonth=new Map(r.months.map(m=>[m.month,m]));
 chartPoints=Array.from({length:count},(_,i)=>{let month=monthPlus(first,i),entry=state.savings[month],computed=byMonth.get(month),isFuture=month>=currentMonth;return {month,value:computed?computed.balance:entry?Number(entry.amount):null,type:computed?computed.source:entry?(entry.status==='actual'?'actual':'estimate'):'missing',isFuture}});
-const known=chartPoints.filter(p=>p.value!==null);const min=Math.min(0,...known.map(p=>p.value)),max=Math.max(100000,...known.map(p=>p.value)),span=Math.max(1,max-min);const step=84,left=54,width=Math.max(420,left+count*step+24),top=32,height=245,bottom=190;
+const known=chartPoints.filter(p=>Number.isFinite(p.value));
+// Always include a true 0-yen origin for nonnegative balances. Extend below 0 only
+// when the series contains debt/overdraft; round to readable 1/2/5 tick steps.
+const scale=balanceChartScale(known.map(p=>p.value));
+const min=scale.min,max=scale.max,span=max-min;
+const step=84,left=54,width=Math.max(420,left+count*step+24),top=32,height=245,bottom=190;
 const xx=i=>left+i*step,yy=v=>top+(max-v)/span*(bottom-top);
-const lines=[];const axisLabels=[];for(let i=0;i<4;i++){let v=max-(max-min)*i/3,y=yy(v);lines.push(`<line x1="${left-12}" y1="${y}" x2="${width-18}" y2="${y}" stroke="#dae4e3" stroke-dasharray="3 5"/>`);axisLabels.push(`<text x="43" y="${y+4}" text-anchor="end" font-size="10" fill="#73858a">${Math.round(v/10000)}万</text>`)}
+const lines=[],axisLabels=[];
+for(let v=min,i=0;i<50&&v<=max+scale.step*.01;v=min+(++i)*scale.step){
+  const y=yy(v),isZero=Math.abs(v)<1e-7;
+  lines.push(`<line x1="${left-12}" y1="${y}" x2="${width-18}" y2="${y}" stroke="${isZero?'#527d73':'#dae4e3'}" stroke-width="${isZero?1.8:1}" ${isZero?'':'stroke-dasharray="3 5"'}/>`);
+  axisLabels.push(`<text x="43" y="${y+4}" text-anchor="end" font-size="10" font-weight="${isZero?700:400}" fill="${isZero?'#155e51':'#73858a'}">${formatBalanceAxis(v)}</text>`);
+}
 $('chartFixedAxis').innerHTML=`<svg width="54" height="245" viewBox="0 0 54 245" aria-hidden="true">${axisLabels.join('')}</svg>`;
 let segments=[],segment=[];for(let i=0;i<chartPoints.length;i++){let p=chartPoints[i];if(p.value===null){if(segment.length>1)segments.push(segment);segment=[]}else{segment.push({i,p})}}if(segment.length>1)segments.push(segment);
 const paths=[];for(let seg of segments){for(let j=1;j<seg.length;j++){const prev=seg[j-1],cur=seg[j],future=cur.p.type==='forecast'||prev.p.type==='forecast';paths.push(`<line class="chart-curve" x1="${xx(prev.i)}" y1="${yy(prev.p.value)}" x2="${xx(cur.i)}" y2="${yy(cur.p.value)}" stroke="${future?'#2d8c91':(cur.p.type==='reconstructed'||prev.p.type==='reconstructed'?'#d49a36':'#16816a')}" stroke-width="3" stroke-linecap="round" ${future?'stroke-dasharray="6 5"':''}/>`)} }
