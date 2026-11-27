@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ミライ残高 | PWA 0.6.6</title><meta name="theme-color" content="#124B42"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="ミライ残高"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png?v=066"><style>
+<title>ミライ残高 | PWA 0.6.7</title><meta name="theme-color" content="#124B42"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="ミライ残高"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png?v=066"><style>
 :root{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:#1b2935;background:#f3f6f8}*{box-sizing:border-box}body{margin:0}header{background:#133d3a;color:white;padding:20px max(20px,calc((100vw - 1080px)/2))}header h1{margin:0;font-size:24px}header small{color:#b9dbd2}main{max-width:1080px;margin:24px auto;padding:0 16px 50px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.card{background:white;border-radius:16px;padding:20px;box-shadow:0 2px 12px #18384a10;margin-bottom:16px}.card h2{font-size:17px;margin:0 0 14px}.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.row>*{min-width:0}label{font-size:13px;color:#52616c;display:block;margin:8px 0 4px}input,select{font:inherit;padding:10px;border:1px solid #ccd7dd;border-radius:9px;background:white;max-width:100%;width:100%}input[type=checkbox]{width:auto}button{font:inherit;border:0;background:#16695d;color:white;border-radius:9px;padding:10px 14px;cursor:pointer}button.secondary{background:#e5eeed;color:#22524b}button.danger{background:#fff0ef;color:#a33329}button:disabled{opacity:.5}.muted{color:#687781;font-size:12px}.hero{background:#133d3a;color:white}.hero .muted{color:#b6d7d0}.number{font-size:32px;font-weight:750;letter-spacing:-1px}.negative{color:#bd3434}.hero .negative{color:#ffc5c5}.smallnum{font-weight:700;font-size:20px}.stat{background:#f4f8f7;padding:12px;border-radius:12px}.form3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.form4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:13px;white-space:nowrap}th,td{text-align:left;padding:11px 8px;border-bottom:1px solid #e9eeee}th{color:#687781;background:#f7faf9}td.num{text-align:right;font-variant-numeric:tabular-nums}th.num{text-align:right}.pill{border-radius:100px;background:#fff3dc;color:#8b5900;font-size:11px;padding:3px 7px}.pill.ok{background:#e0f4e8;color:#246644}.warn{background:#fff5df;border-radius:10px;padding:12px;color:#805b16;font-size:13px}.bar{height:12px;background:#e6eeee;border-radius:10px;overflow:hidden}.bar>div{height:100%;background:#36a68b}.monthline{padding:10px 0;border-bottom:1px solid #eef1f2}.monthline button{padding:4px 9px;font-size:12px}.sectionhead{display:flex;justify-content:space-between;align-items:center;gap:10px}details{margin-top:12px}summary{cursor:pointer;color:#14675b;font-weight:600}.note{font-size:12px;color:#667681;line-height:1.7}.toggle{display:flex;gap:8px;align-items:center;font-size:13px}.topnav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}.topnav button{background:white;color:#275b53;border:1px solid #cbded9}.topnav button.active{background:#16695d;color:white}.hidden{display:none!important}@media(max-width:720px){.grid,.form3,.form4{grid-template-columns:1fr}.number{font-size:27px}.card{padding:15px}main{margin-top:16px}}
 
 .history-nav{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:12px 0}.history-nav button{font-size:13px}.actual{background:#e0f4e8;color:#246644}.monthline .actual-value{color:#16695d}.history-note{background:#edf7f4;padding:12px;border-radius:10px;color:#21574f;font-size:13px;line-height:1.6}.historical-value{color:#52616c}.period-label{font-weight:650}
@@ -588,6 +588,19 @@ header .brand{min-width:0}
 body.picker-visible{overflow:hidden;touch-action:none}
 .date-picker-overlay,.month-picker-overlay{overscroll-behavior:contain}
 @media(max-width:380px){.date-picker-header{gap:7px}.date-picker-header button{width:42px;min-height:42px}}
+
+/* v0.6.7 日付別残高の期間表示 */
+#timeline tr.timeline-past td{color:#78858a;background:#f5f7f7}
+#timeline tr.timeline-today td{background:#eaf6ef;color:#254f3e;font-weight:600}
+#timeline tr.timeline-future td{color:#263b35}
+#timeline .timeline-date{display:block;font-weight:650}
+#timeline .timeline-period{display:inline-block;margin-top:3px;padding:2px 6px;border-radius:5px;font-size:10px;line-height:1.45;font-weight:650;white-space:nowrap}
+#timeline .timeline-period.past{background:#e6eaeb;color:#59666b}
+#timeline .timeline-period.today{background:#ccebd8;color:#205d3d}
+#timeline .timeline-period.future{background:#e8f0ee;color:#48645d}
+#timeline td.timeline-balance-negative{color:#c02f36!important;font-weight:750;background:#fff0f0}
+#timeline tr.timeline-today td.timeline-balance-negative{background:#ffe8e8}
+@media(max-width:520px){#timeline .timeline-period{font-size:9px;padding:2px 5px}}
 </style></head>
 <script>
 // Safari's home-screen runtime may report zero safe-area insets.
@@ -635,7 +648,7 @@ body.picker-visible{overflow:hidden;touch-action:none}
 
 <button type="button" data-goto="settings"><span class="more-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="2.5" fill="#e8f4ef"/><circle cx="16" cy="17" r="2.5" fill="#e8f4ef"/></svg></span><span><b>設定</b><small>基準残高・給料日・カード支払日</small></span><span class="chevron">›</span></button>
 <button type="button" data-goto="data"><span class="more-ico">⇩</span><span><b>データ管理</b><small>JSONバックアップ・復元</small></span><span class="chevron">›</span></button>
-</div><p class="more-footer">PWA Ver.0.6.6 ・ オフライン対応</p>
+</div><p class="more-footer">PWA Ver.0.6.7 ・ オフライン対応</p>
 </section>
 <div id="subviewBar" class="hidden"><button id="backToMore" type="button">‹ その他に戻る</button><strong id="subviewLabel"></strong></div>
 <section id="dashboard"><div class="view-heading"><h2>残高予測</h2><p>これからの口座残高をひと目で確認</p></div>
@@ -726,7 +739,7 @@ body.picker-visible{overflow:hidden;touch-action:none}
 <label for="jsonPaste">バックアップのJSON全文</label><textarea id="jsonPaste" spellcheck="false" placeholder='{ "baseDate": "2026-11-25", ... }'></textarea>
 <button type="button" id="restorePaste" class="secondary">貼り付けたJSONを確認して復元</button>
 </details></div></div></section>
-<footer class="note">PWA Ver.0.6.6｜端末内保存・銀行連携なし。データは自動同期されません。定期的にJSONバックアップを保存してください。</footer>
+<footer class="note">PWA Ver.0.6.7｜端末内保存・銀行連携なし。データは自動同期されません。定期的にJSONバックアップを保存してください。</footer>
 </main>
 <script>
 "use strict";
@@ -1181,9 +1194,16 @@ renderLineChart(r);renderShared(r);
 let old=$('monthSelect').value;$('monthSelect').innerHTML=r.months.map(m=>`<option value="${m.month}">${m.month}</option>`).join('');$('monthSelect').value=r.months.some(m=>m.month===old)?old:currentMonth;renderTimeline(r)}
 function renderTimeline(r=calc()){
  const month=$('monthSelect').value;
+ const todayLocal=dateString(new Date());
  $('timelineTitle').textContent=month+' の日付別残高（日末）';
  const rows=r.events.filter(e=>e.date.startsWith(month));
- $('timeline').innerHTML=rows.map(e=>`<tr><td>${esc(e.date.slice(5))}</td><td>${esc(e.title)}</td><td>${statusLabel(e.status)}</td><td class="num">${e.type==='adjustment'?(e.amount>=0?'+':'−'):(e.type==='income'?'+':'−')}${yen(Math.abs(e.amount))}</td><td class="num">${e.balance===null?'—':yen(e.balance)}</td></tr>`).join('')||'<tr><td colspan="5">この月の入出金予定はありません。</td></tr>';
+ $('timeline').innerHTML=rows.map(e=>{
+  const period=e.date<todayLocal?'past':e.date===todayLocal?'today':'future';
+  // 過去の明細は逆算・未照合の可能性があるため、実績と断定しない。
+  const periodLabel=e.status==='reconciliation'?'実績照合':period==='today'?'今日':period==='future'?'予測':e.historical?'過去・参考推計':'過去・未照合';
+  const balanceClass=e.balance!==null&&Number(e.balance)<0?' timeline-balance-negative':'';
+  return `<tr class="timeline-${period}"><td><span class="timeline-date">${esc(e.date.slice(5))}</span><span class="timeline-period ${period}">${periodLabel}</span></td><td>${esc(e.title)}</td><td>${statusLabel(e.status)}</td><td class="num">${e.type==='adjustment'?(e.amount>=0?'+':'−'):(e.type==='income'?'+':'−')}${yen(Math.abs(e.amount))}</td><td class="num${balanceClass}">${e.balance===null?'—':yen(e.balance)}</td></tr>`;
+ }).join('')||'<tr><td colspan="5">この月の入出金予定はありません。</td></tr>';
  const item=r.months.find(m=>m.month===month);
  if(item&&item.historical){$('timeline').innerHTML+=`<tr><td colspan="5" class="muted">月末残高：${item.balance===null?'資料不足':yen(item.balance)}（${item.source==='actual'?'記録済み実績':item.source==='estimate'?'記録済み見込み':'参考推計（逆算）'}）。${item.missingSalary?'給与未入力。':''}${item.missing.length?'カード未入力：'+esc(item.missing.join('、'))+'。':''}未登録の収支があると正確な実績にはなりません。</td></tr>`;}
  const box=$('ledgerSummary');
